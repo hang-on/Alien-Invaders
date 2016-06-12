@@ -23,7 +23,9 @@
   reti
 
   HandleRasterInterrupt:
-    nop
+    ld a,20
+    ld b,8
+    call SetRegister
   ret
 
 .ends
@@ -57,6 +59,9 @@
 
   Main:
     call AwaitFrameInterrupt
+    ld a,0
+    ld b,8
+    call SetRegister
 
   jp Main
 
