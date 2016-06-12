@@ -8,11 +8,24 @@
 .section "!VDP interrupt" force
 ; ---------------------------------------------------------------------------
   push af
+  push bc
+  push de
+  push hl
     in a,CONTROL_PORT
     ld (VDPStatus),a
+    bit 7,a
+    call z,HandleRasterInterrupt
+  pop hl
+  pop de
+  pop bc
   pop af
   ei
   reti
+
+  HandleRasterInterrupt:
+    nop
+  ret
+
 .ends
 
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
