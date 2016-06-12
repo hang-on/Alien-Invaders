@@ -1,0 +1,17 @@
+; this file was created with wlalink by ville helin <vhelin@iki.fi>.
+; wla symbolic information for "Binaries\Alien-Invaders.sms".
+
+[labels]
+0000:c000 VDPStatus
+0000:c001 PauseFlag
+0000:c002 InputPorts
+0000:001d _MapperInitData
+0000:0096 AwaitFrameInterrupt
+0000:0021 ClearRam
+0000:002d _FillMemory
+0000:0071 ClearVRam
+0000:0042 _VDPRegisterInitData
+0000:004d InitializeVDPRegisters
+0000:00a6 SetRegister
+0000:0085 SetupMain
+0000:0090 Main
