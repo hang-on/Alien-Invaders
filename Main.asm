@@ -14,19 +14,13 @@
     in a,CONTROL_PORT
     ld (VDPStatus),a
     bit 7,a
-    call z,HandleRasterInterrupt
+    call z,HandleRasterInterrupt ; Located in the Invaderlib.inc
   pop hl
   pop de
   pop bc
   pop af
   ei
   reti
-
-  HandleRasterInterrupt:
-    ld a,20
-    ld b,8
-    call SetRegister
-  ret
 
 .ends
 
@@ -59,8 +53,9 @@
 
   Main:
     call AwaitFrameInterrupt
-    ld a,0
-    ld b,8
+
+    xor a
+    ld b,HORIZONTAL_SCROLL_REGISTER
     call SetRegister
 
   jp Main

@@ -29,5 +29,18 @@
   ld de,0
   ld hl,\1+16+NAME_TABLE_SIZE
   call LoadVRam
-
 .endm
+
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+.ramsection "Raster Interrupt Variables" slot 3
+
+.ends
+; -----------------------------------------------------------------------------
+.section "Raster Interrupt" free
+; -----------------------------------------------------------------------------
+  HandleRasterInterrupt:
+    ld a,20
+    ld b,HORIZONTAL_SCROLL_REGISTER
+    call SetRegister
+  ret
+.ends
