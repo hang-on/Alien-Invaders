@@ -25,7 +25,7 @@
 ; -----------------------------------------------------------------------------
   SetupMain:
 
-    LoadImage MockupPalette,MockupTiles,MockupTilemap,2*32*24
+    LoadImage MockupPalette,MockupTiles,MockupTilemap
 
     ld a,ENABLE_DISPLAY_ENABLE_FRAME_INTERRUPTS_NORMAL_SPRITES
     ld b,1

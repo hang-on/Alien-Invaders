@@ -9,6 +9,7 @@
 ; HARDWARE DEFINITIONS
 ; -----------------------------------------------------------------------------
 .equ NAME_TABLE_START $3800
+.equ NAME_TABLE_SIZE 2*32*24
 .equ SAT_Y_START $3f00
 .equ SAT_XC_START SAT_Y_START+64+64
 .equ SPRITE_TERMINATOR $d0
