@@ -48,10 +48,5 @@
 ; -----------------------------------------------------------------------------
   .section "Data" free
 ; -----------------------------------------------------------------------------
-    MockupPalette:
-      .include "MockupPalette.inc"
-    MockupTiles:
-      .include "MockupTiles.inc"
-    MockupTilemap:
-      .include "MockupTilemap.inc"
+    .include "MockupAssets.inc"
   .ends

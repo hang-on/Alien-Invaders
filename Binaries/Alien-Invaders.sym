@@ -18,5 +18,5 @@
 0000:0071 SetupMain
 0000:009e Main
 0002:8000 MockupPalette
-0002:8010 MockupTiles
-0002:8290 MockupTilemap
+0002:8006 MockupTiles
+0002:8286 MockupTilemap
