@@ -17,9 +17,6 @@
 0000:00e8 SetRegister
 0000:0071 SetupMain
 0000:009e Main
-0002:8000 Tiles
-0002:8280 TilesEnd
-0002:8280 Tilemap
-0002:8880 TilemapEnd
-0002:8880 Palette
-0002:8890 PaletteEnd
+0002:8000 MockupPalette
+0002:8010 MockupTiles
+0002:8290 MockupTilemap
