@@ -44,6 +44,11 @@
     ld b,0
     call SetRegister
 
+    ld a,89
+    ld b,10
+    call SetRegister
+
+
     ld a,ENABLE_DISPLAY_ENABLE_FRAME_INTERRUPTS_NORMAL_SPRITES
     ld b,1
     call SetRegister
