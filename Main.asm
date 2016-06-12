@@ -40,11 +40,6 @@
     ld b,0
     call SetRegister
 
-    ld a,65
-    ld b,10
-    call SetRegister
-
-
     ld a,ENABLE_DISPLAY_ENABLE_FRAME_INTERRUPTS_NORMAL_SPRITES
     ld b,1
     call SetRegister
@@ -54,11 +49,7 @@
   Main:
     call AwaitFrameInterrupt
 
-    xor a
-    ld b,HORIZONTAL_SCROLL_REGISTER
-    call SetRegister
-
-    call ResetRasterTablePointer
+    call ResetRasterizer
 
   jp Main
 

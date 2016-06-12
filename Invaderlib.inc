@@ -41,18 +41,27 @@
   HandleRasterInterrupt:
     ld hl,(RasterTablePointer)
     ld a,(hl)
-    inc hl
-    ld (RasterTablePointer),hl
     ld b,HORIZONTAL_SCROLL_REGISTER
     call SetRegister
+    inc hl
+    ld a,(hl)
+    ld b,10
+    call SetRegister
+    inc hl
+    ld (RasterTablePointer),hl
   ret
 
-  ResetRasterTablePointer:
+  ResetRasterizer:
     ld hl,RasterTable
     ld (RasterTablePointer),hl
+    call HandleRasterInterrupt ; FIXME: Not nice with fake int - naming!!
   ret
 
   RasterTable:
-    .db 20 0 0 0 0 0
+    .db 0, 38  ; Format: [h.scroll], [scanlines]
+    .db 10, 22
+    .db -6, $ff
+    .db 0
+
 
 .ends
