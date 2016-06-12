@@ -17,6 +17,8 @@
 0000:00e8 SetRegister
 0000:0071 SetupMain
 0000:009e Main
+0002:8000 MockupAssets
 0002:8000 MockupPalette
-0002:8006 MockupTiles
-0002:8286 MockupTilemap
+0002:8010 MockupTilemap
+0002:8610 MockupTiles
+0002:8890 MockupAssetsEnd
