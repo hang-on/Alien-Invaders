@@ -27,6 +27,10 @@
 
     LoadImage MockupAssets,MockupAssetsEnd
 
+    ld a,FULL_SCROLL_SHOW_LEFT_COLUMN_KEEP_SPRITES_ENABLE_RASTER_INT
+    ld b,0
+    call SetRegister
+
     ld a,ENABLE_DISPLAY_ENABLE_FRAME_INTERRUPTS_NORMAL_SPRITES
     ld b,1
     call SetRegister
