@@ -40,7 +40,7 @@
     ld b,0
     call SetRegister
 
-    ld a,89
+    ld a,65
     ld b,10
     call SetRegister
 
@@ -57,6 +57,8 @@
     xor a
     ld b,HORIZONTAL_SCROLL_REGISTER
     call SetRegister
+
+    call ResetRasterTablePointer
 
   jp Main
 

@@ -33,14 +33,26 @@
 
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Raster Interrupt Variables" slot 3
-
+  RasterTablePointer dw
 .ends
 ; -----------------------------------------------------------------------------
 .section "Raster Interrupt" free
 ; -----------------------------------------------------------------------------
   HandleRasterInterrupt:
-    ld a,20
+    ld hl,(RasterTablePointer)
+    ld a,(hl)
+    inc hl
+    ld (RasterTablePointer),hl
     ld b,HORIZONTAL_SCROLL_REGISTER
     call SetRegister
   ret
+
+  ResetRasterTablePointer:
+    ld hl,RasterTable
+    ld (RasterTablePointer),hl
+  ret
+
+  RasterTable:
+    .db 20 0 0 0 0 0
+
 .ends
