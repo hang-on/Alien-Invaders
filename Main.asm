@@ -14,7 +14,7 @@
     in a,CONTROL_PORT
     ld (VDPStatus),a
     bit 7,a
-    call z,HandleRasterInterrupt ; Located in the Invaderlib.inc
+    call z,CreateNewScrollZone ; Located in the Invaderlib.inc
   pop hl
   pop de
   pop bc
@@ -49,7 +49,7 @@
   Main:
     call AwaitFrameInterrupt
 
-    call ResetRasterizer
+    call ResetScrollZones
 
   jp Main
 

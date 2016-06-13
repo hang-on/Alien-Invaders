@@ -33,13 +33,13 @@
 
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Raster Interrupt Variables" slot 3
-  RasterTablePointer dw
+  ScrollZoneTablePointer dw
 .ends
 ; -----------------------------------------------------------------------------
 .section "Raster Interrupt" free
 ; -----------------------------------------------------------------------------
-  HandleRasterInterrupt:
-    ld hl,(RasterTablePointer)
+  CreateNewScrollZone:
+    ld hl,(ScrollZoneTablePointer)
     ld a,(hl)
     ld b,HORIZONTAL_SCROLL_REGISTER
     call SetRegister
@@ -48,20 +48,30 @@
     ld b,10
     call SetRegister
     inc hl
-    ld (RasterTablePointer),hl
+    ld (ScrollZoneTablePointer),hl
   ret
 
-  ResetRasterizer:
-    ld hl,RasterTable
-    ld (RasterTablePointer),hl
-    call HandleRasterInterrupt ; FIXME: Not nice with fake int - naming!!
+  ResetScrollZones:
+    ld hl,ScrollZoneTable
+    ld (ScrollZoneTablePointer),hl
+    call CreateNewScrollZone
   ret
 
-  RasterTable:
-    .db 0, 38  ; Format: [h.scroll], [scanlines]
+  ScrollZoneTable:
+    ; This table creates the following scroll zones:
+    ; scanlines : scroll
+    ; 00-37     : 0
+    ; 38-75     : 10
+    ; 76-97     : -6
+    ; 98+       : 0
+    .db 0, 38,   ; Table format: [h.scroll], [scanlines]
     .db 10, 22
     .db -6, $ff
     .db 0
 
+  NewScrollZoneTable:
+    .db 38, 0, 10
+    .db 22, -6, 0
+    .db $ff
 
 .ends
