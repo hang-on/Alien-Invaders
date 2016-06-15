@@ -8,16 +8,8 @@
 .section "!VDP interrupt" force
 ; ---------------------------------------------------------------------------
   push af
-  push bc
-  push de
-  push hl
     in a,CONTROL_PORT
     ld (VDPStatus),a
-    bit 7,a
-    call z,CreateNewScrollZone ; Located in the Invaderlib.inc
-  pop hl
-  pop de
-  pop bc
   pop af
   ei
   reti
@@ -49,7 +41,6 @@
   Main:
     call AwaitFrameInterrupt
 
-    call ResetScrollZones
 
   jp Main
 
