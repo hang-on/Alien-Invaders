@@ -20,7 +20,7 @@
 0000:c005 RasterEffect.Scroll
 0000:c006 RasterEffect.TablePointer
 0000:013b HandleRasterInterrupt
-0000:00b1 CreateSlice
+0000:00b1 RasterEffect_CreateSlice
 0000:00bd PrepareNextSlice
 0000:00ce RasterEffect_Frame
 0000:00df RasterEffect_Initialize

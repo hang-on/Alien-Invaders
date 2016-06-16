@@ -58,7 +58,7 @@
     ld b,a
     ld a,(RasterEffect.NextSlice)
     cp b
-    call z,CreateSlice
+    call z,RasterEffect_CreateSlice
   ret
 
 .ends
@@ -66,7 +66,7 @@
 ; -----------------------------------------------------------------------------
 .section "Misc Development" free
 ; -----------------------------------------------------------------------------
-  CreateSlice:
+  RasterEffect_CreateSlice:
     ld a,(RasterEffect.Scroll)
     ld b,HORIZONTAL_SCROLL_REGISTER
     call SetRegister
