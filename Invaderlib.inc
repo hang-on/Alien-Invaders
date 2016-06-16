@@ -1,7 +1,9 @@
 ; Invaderlib.inc
 
-.equ RASTER_INTERRUPT_VALUE 7
-.equ SLICE_POINT_VALUE ((RASTER_INTERRUPT_VALUE*3)+2)
+.equ ONE_ROW 7
+.equ RASTER_INTERRUPT_VALUE ONE_ROW
+.equ SLICE_POINT_1 5
+.equ SLICE_POINT_2 8
 
 ; -----------------------------------------------------------------------------
 .macro LoadImage
@@ -13,7 +15,7 @@
   ;      .include "MockupAssets.inc"
   ;    MockupAssetsEnd:
   ; Drop a 256x192 indexed color image on \Tools\MakeAssets.bat to quickly
-  ; generate and include file formatted for this macro.
+  ; generate an include file formatted for this macro.
 
   ; Assume 16 colors (bmp2tile's -fullpalette option).
   ld a,0
@@ -44,7 +46,7 @@
   HandleRasterInterrupt:
     in a,(V_COUNTER_PORT)
     ld b,a
-    call GetSlicePoint
+    call GetSlicePoint                    ; Return slicepoint in A.
     cp b
     ret nz
       ld a,8
@@ -64,6 +66,11 @@
 
   GetSlicePoint:
   ; Returns slicepoint in A.
-    ld a,SLICE_POINT_VALUE
+    ld hl,SlicePointTable
+    ld a,(hl)
   ret
+
+  SlicePointTable:
+    .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1)
+    .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1)
 .ends

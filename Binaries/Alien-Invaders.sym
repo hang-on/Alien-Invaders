@@ -12,12 +12,13 @@
 0000:0049 ClearVRam
 0000:00b5 _VDPRegisterInitData
 0000:00c0 InitializeVDPRegisters
-0000:0106 LoadCRam
+0000:0115 LoadCRam
 0000:00d3 LoadVRam
 0000:005d SetRegister
 0000:00e6 HandleRasterInterrupt
-0000:0113 ResetScroll
-0000:011b GetSlicePoint
+0000:0106 ResetScroll
+0000:010e GetSlicePoint
+0000:0113 SlicePointTable
 0000:0071 SetupMain
 0000:00ac Main
 0002:8000 MockupAssets
