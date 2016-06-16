@@ -64,7 +64,6 @@
     ld a,(ScrollValue)
     ld b,HORIZONTAL_SCROLL_REGISTER
     call SetRegister
-
   ret
 
   PrepareNextSlice:
@@ -85,10 +84,6 @@
   ret
 
   SetupRasterEffect:
-    ld a,RASTER_INTERRUPT_VALUE
-    ld b,RASTER_INTERRUPT_REGISTER
-    call SetRegister
-
     ld hl,RasterEffectTable
     ld (RasterEffectTablePointer),hl
 

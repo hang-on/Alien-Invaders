@@ -32,6 +32,9 @@
 
     LoadImage MockupAssets,MockupAssetsEnd
 
+    ld a,RASTER_INTERRUPT_VALUE
+    ld b,RASTER_INTERRUPT_REGISTER
+    call SetRegister
 
     ld a,FULL_SCROLL_SHOW_LEFT_COLUMN_KEEP_SPRITES_ENABLE_RASTER_INT
     ld b,0
