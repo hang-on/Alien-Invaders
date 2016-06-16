@@ -40,7 +40,8 @@
 
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Invader Library Variables" slot 3
-
+  SlicePoint db
+  ScrollValue db
 .ends
 ; -----------------------------------------------------------------------------
 .section "Raster Interrupt Handler" free
@@ -80,6 +81,15 @@
     ld a,0
     ld b,HORIZONTAL_SCROLL_REGISTER
     call SetRegister
+  ret
+
+  SetupRasterEffect:
+    ld a,RASTER_INTERRUPT_VALUE
+    ld b,RASTER_INTERRUPT_REGISTER
+    call SetRegister
+    ld hl,RasterEffectTable
+    ld a,((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1)
+    ld (SlicePoint),a
   ret
 
   SlicePointTable:
