@@ -1,5 +1,7 @@
 ; Invaderlib.inc
 
+.equ RASTER_INTERRUPT_VALUE 7
+
 ; -----------------------------------------------------------------------------
 .macro LoadImage
 ; -----------------------------------------------------------------------------
@@ -32,11 +34,14 @@
 .endm
 
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-.ramsection " Variables" slot 3
+.ramsection "Raster Interrupt Variables" slot 3
 
 .ends
 ; -----------------------------------------------------------------------------
-.section "yyy" free
+.section "Raster Interrupt Handler" free
 ; -----------------------------------------------------------------------------
-  
+  HandleRasterInterrupt:
+
+  ret
+
 .ends

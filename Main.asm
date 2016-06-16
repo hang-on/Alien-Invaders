@@ -8,8 +8,12 @@
 .section "!VDP interrupt" force
 ; ---------------------------------------------------------------------------
   push af
+  exx
     in a,CONTROL_PORT
     ld (VDPStatus),a
+    bit 7,a
+    call z,HandleRasterInterrupt
+  exx
   pop af
   ei
   reti
@@ -28,6 +32,10 @@
 
     LoadImage MockupAssets,MockupAssetsEnd
 
+    ld a,RASTER_INTERRUPT_VALUE
+    ld b,RASTER_INTERRUPT_REGISTER
+    call SetRegister
+
     ld a,FULL_SCROLL_SHOW_LEFT_COLUMN_KEEP_SPRITES_ENABLE_RASTER_INT
     ld b,0
     call SetRegister
@@ -40,7 +48,6 @@
 
   Main:
     call AwaitFrameInterrupt
-
 
   jp Main
 

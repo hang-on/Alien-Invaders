@@ -15,7 +15,7 @@
 0000:00f3 LoadCRam
 0000:00d0 LoadVRam
 0000:005d SetRegister
-0000:0065 HandleLineInterrupt
+0000:0065 HandleRasterInterrupt
 0000:0071 SetupMain
 0000:00ac Main
 0002:8000 MockupAssets
