@@ -4,6 +4,7 @@
 .equ RASTER_INTERRUPT_VALUE ONE_ROW
 .equ SLICE_POINT_1 5
 .equ SLICE_POINT_2 8
+.equ SCROLL_VALUE 8
 
 ; -----------------------------------------------------------------------------
 .macro LoadImage
@@ -49,14 +50,16 @@
     call GetSlicePoint                    ; Return slicepoint in A.
     cp b
     ret nz
-      ld a,8
+      call GetScrollValue                 ; Return scroll value in A.
       ld b,HORIZONTAL_SCROLL_REGISTER
       call SetRegister
   ret
 
 .ends
 
-.section "Development" free
+; -----------------------------------------------------------------------------
+.section "Misc Development" free
+; -----------------------------------------------------------------------------
   ResetScroll:
     ld a,0
     ld b,HORIZONTAL_SCROLL_REGISTER
@@ -73,4 +76,13 @@
   SlicePointTable:
     .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1)
     .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1)
+
+  GetScrollValue:
+    ld hl,ScrollValueTable
+    ld a,(hl)
+  ret
+
+  ScrollValueTable:
+    .db SCROLL_VALUE
+
 .ends
