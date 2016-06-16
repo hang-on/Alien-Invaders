@@ -87,6 +87,17 @@
     call SetRegister
   ret
 
+  RasterEffect_Frame:
+    call SetupRasterEffect
+    call ResetScroll
+  ret
+
+  RasterEffect_Initialize:
+    ld a,RASTER_INTERRUPT_VALUE
+    ld b,RASTER_INTERRUPT_REGISTER
+    call SetRegister
+  ret
+
   SetupRasterEffect:
     ld hl,RasterEffectTable
     ld (RasterEffect.TablePointer),hl

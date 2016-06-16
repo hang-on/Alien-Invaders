@@ -32,9 +32,7 @@
 
     LoadImage MockupAssets,MockupAssetsEnd
 
-    ld a,RASTER_INTERRUPT_VALUE
-    ld b,RASTER_INTERRUPT_REGISTER
-    call SetRegister
+    call RasterEffect_Initialize
 
     ld a,FULL_SCROLL_SHOW_LEFT_COLUMN_KEEP_SPRITES_ENABLE_RASTER_INT
     ld b,0
@@ -48,9 +46,7 @@
 
   Main:
     call AwaitFrameInterrupt
-    call SetupRasterEffect
-    call ResetScroll
-
+    call RasterEffect_Frame
   jp Main
 
 .ends
