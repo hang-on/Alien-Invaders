@@ -39,8 +39,8 @@
 .endm
 
 .struct RasterEffectStruct
-  SlicePoint db
-  ScrollValue db
+  NextSlice db
+  Scroll db
   TablePointer dw
 .endst
 
@@ -54,7 +54,7 @@
   HandleRasterInterrupt:
     in a,(V_COUNTER_PORT)
     ld b,a
-    ld a,(RasterEffect.SlicePoint)
+    ld a,(RasterEffect.NextSlice)
     cp b
     call z,CreateSlice
   ret
@@ -65,7 +65,7 @@
 .section "Misc Development" free
 ; -----------------------------------------------------------------------------
   CreateSlice:
-    ld a,(RasterEffect.ScrollValue)
+    ld a,(RasterEffect.Scroll)
     ld b,HORIZONTAL_SCROLL_REGISTER
     call SetRegister
   ret
@@ -73,10 +73,10 @@
   PrepareNextSlice:
     ld hl,(RasterEffect.TablePointer)
     ld a,(hl)
-    ld (RasterEffect.SlicePoint),a
+    ld (RasterEffect.NextSlice),a
     inc hl
     ld a,(hl)
-    ld (RasterEffect.ScrollValue),a
+    ld (RasterEffect.Scroll),a
     inc hl
     ld (RasterEffect.TablePointer),hl
   ret

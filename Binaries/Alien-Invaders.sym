@@ -16,8 +16,8 @@
 0000:0106 LoadVRam
 0000:005d SetRegister
 0000:c004 RasterEffect
-0000:c004 RasterEffect.SlicePoint
-0000:c005 RasterEffect.ScrollValue
+0000:c004 RasterEffect.NextSlice
+0000:c005 RasterEffect.Scroll
 0000:c006 RasterEffect.TablePointer
 0000:0136 HandleRasterInterrupt
 0000:00b8 CreateSlice
