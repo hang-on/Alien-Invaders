@@ -38,11 +38,15 @@
   call LoadVRam
 .endm
 
-; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-.ramsection "Invader Library Variables" slot 3
+.struct RasterEffectStruct
   SlicePoint db
   ScrollValue db
-  RasterEffectTablePointer dw
+  TablePointer dw
+.endst
+
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+.ramsection "Invader Library Variables" slot 3
+  RasterEffect INSTANCEOF RasterEffectStruct
 .ends
 ; -----------------------------------------------------------------------------
 .section "Raster Interrupt Handler" free
@@ -50,7 +54,7 @@
   HandleRasterInterrupt:
     in a,(V_COUNTER_PORT)
     ld b,a
-    ld a,(SlicePoint)
+    ld a,(RasterEffect.SlicePoint)
     cp b
     call z,CreateSlice
   ret
@@ -61,20 +65,20 @@
 .section "Misc Development" free
 ; -----------------------------------------------------------------------------
   CreateSlice:
-    ld a,(ScrollValue)
+    ld a,(RasterEffect.ScrollValue)
     ld b,HORIZONTAL_SCROLL_REGISTER
     call SetRegister
   ret
 
   PrepareNextSlice:
-    ld hl,(RasterEffectTablePointer)
+    ld hl,(RasterEffect.TablePointer)
     ld a,(hl)
-    ld (SlicePoint),a
+    ld (RasterEffect.SlicePoint),a
     inc hl
     ld a,(hl)
-    ld (ScrollValue),a
+    ld (RasterEffect.ScrollValue),a
     inc hl
-    ld (RasterEffectTablePointer),hl
+    ld (RasterEffect.TablePointer),hl
   ret
 
   ResetScroll:
@@ -85,7 +89,7 @@
 
   SetupRasterEffect:
     ld hl,RasterEffectTable
-    ld (RasterEffectTablePointer),hl
+    ld (RasterEffect.TablePointer),hl
 
     call PrepareNextSlice
   ret
