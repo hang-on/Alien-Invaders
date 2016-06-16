@@ -42,7 +42,9 @@
 ; -----------------------------------------------------------------------------
   HandleRasterInterrupt:
     in a,(V_COUNTER_PORT)
-    cp (RASTER_INTERRUPT_VALUE*2)+1
+    ld b,a
+    call GetSlicePoint
+    cp b
     ret nz
       ld a,8
       ld b,HORIZONTAL_SCROLL_REGISTER
@@ -56,5 +58,10 @@
     ld a,0
     ld b,HORIZONTAL_SCROLL_REGISTER
     call SetRegister
+  ret
+
+  GetSlicePoint:
+  ; Returns slicepoint in A.
+    ld a,(RASTER_INTERRUPT_VALUE*2)+1
   ret
 .ends
