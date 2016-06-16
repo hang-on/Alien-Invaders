@@ -1,6 +1,7 @@
 ; Invaderlib.inc
 
 .equ RASTER_INTERRUPT_VALUE 7
+.equ SLICE_POINT_VALUE ((RASTER_INTERRUPT_VALUE*3)+2)
 
 ; -----------------------------------------------------------------------------
 .macro LoadImage
@@ -60,8 +61,9 @@
     call SetRegister
   ret
 
+
   GetSlicePoint:
   ; Returns slicepoint in A.
-    ld a,(RASTER_INTERRUPT_VALUE*2)+1
+    ld a,SLICE_POINT_VALUE
   ret
 .ends
