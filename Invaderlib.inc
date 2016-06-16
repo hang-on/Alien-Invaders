@@ -50,7 +50,7 @@
   HandleRasterInterrupt:
     in a,(V_COUNTER_PORT)
     ld b,a
-    call GetSlicePoint                    ; Return slicepoint in A.
+    ld a,(SlicePoint)
     cp b
     call z,CreateSlice
   ret
@@ -61,20 +61,10 @@
 .section "Misc Development" free
 ; -----------------------------------------------------------------------------
   CreateSlice:
-    call GetScrollValue                 ; Return scroll value in A.
+    ld a,(ScrollValue)
     ld b,HORIZONTAL_SCROLL_REGISTER
     call SetRegister
 
-  ret
-
-  GetScrollValue:
-    ; Return scroll value in A.
-    ld a,(ScrollValue)
-  ret
-
-  GetSlicePoint:
-    ; Returns slicepoint in A.
-    ld a,(SlicePoint)
   ret
 
   PrepareNextSlice:
