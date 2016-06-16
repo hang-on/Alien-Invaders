@@ -42,6 +42,7 @@
 .ramsection "Invader Library Variables" slot 3
   SlicePoint db
   ScrollValue db
+  RasterEffectTablePointer dw
 .ends
 ; -----------------------------------------------------------------------------
 .section "Raster Interrupt Handler" free
@@ -63,6 +64,7 @@
     call GetScrollValue                 ; Return scroll value in A.
     ld b,HORIZONTAL_SCROLL_REGISTER
     call SetRegister
+
   ret
 
   GetScrollValue:
@@ -73,6 +75,17 @@
   GetSlicePoint:
     ; Returns slicepoint in A.
     ld a,(SlicePoint)
+  ret
+
+  PrepareNextSlice:
+    ld hl,(RasterEffectTablePointer)
+    ld a,(hl)
+    ld (SlicePoint),a
+    inc hl
+    ld a,(hl)
+    ld (ScrollValue),a
+    inc hl
+    ld (RasterEffectTablePointer),hl
   ret
 
   ResetScroll:
@@ -87,20 +100,10 @@
     call SetRegister
 
     ld hl,RasterEffectTable
-    ld a,(hl)
-    ld (SlicePoint),a
-    inc hl
-    ld a,(hl)
-    ld (ScrollValue),a
+    ld (RasterEffectTablePointer),hl
+
+    call PrepareNextSlice
   ret
-
-  SlicePointTable:
-    .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1)
-    .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1)
-
-  ScrollValueTable:
-    .db SCROLL_VALUE_1
-    .db SCROLL_VALUE_2
 
   RasterEffectTable:
     .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), SCROLL_VALUE_1
