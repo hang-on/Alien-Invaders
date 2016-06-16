@@ -49,10 +49,7 @@
     ld b,a
     call GetSlicePoint                    ; Return slicepoint in A.
     cp b
-    ret nz
-      call GetScrollValue                 ; Return scroll value in A.
-      ld b,HORIZONTAL_SCROLL_REGISTER
-      call SetRegister
+    call z,CreateSlice
   ret
 
 .ends
@@ -60,12 +57,18 @@
 ; -----------------------------------------------------------------------------
 .section "Misc Development" free
 ; -----------------------------------------------------------------------------
-  ResetScroll:
-    ld a,0
+
+  CreateSlice:
+    call GetScrollValue                 ; Return scroll value in A.
     ld b,HORIZONTAL_SCROLL_REGISTER
     call SetRegister
   ret
 
+  GetScrollValue:
+    ; Return scroll value in A.
+    ld hl,ScrollValueTable
+    ld a,(hl)
+  ret
 
   GetSlicePoint:
   ; Returns slicepoint in A.
@@ -73,16 +76,20 @@
     ld a,(hl)
   ret
 
+  ResetScroll:
+    ld a,0
+    ld b,HORIZONTAL_SCROLL_REGISTER
+    call SetRegister
+  ret
+
   SlicePointTable:
     .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1)
     .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1)
 
-  GetScrollValue:
-    ld hl,ScrollValueTable
-    ld a,(hl)
-  ret
-
   ScrollValueTable:
     .db SCROLL_VALUE
+
+  RasterEffectTable:
+    .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), SCROLL_VALUE
 
 .ends
