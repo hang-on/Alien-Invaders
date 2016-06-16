@@ -3,9 +3,11 @@
 .equ ONE_ROW 7
 .equ RASTER_INTERRUPT_VALUE ONE_ROW
 .equ SLICE_POINT_1 5
-.equ SLICE_POINT_2 8
+.equ SLICE_POINT_2 10
+.equ SLICE_POINT_3 15
 .equ SCROLL_VALUE_1 8
 .equ SCROLL_VALUE_2 (-8)
+.equ SCROLL_VALUE_3 0
 
 ; -----------------------------------------------------------------------------
 .macro LoadImage
@@ -68,6 +70,7 @@
     ld a,(RasterEffect.Scroll)
     ld b,HORIZONTAL_SCROLL_REGISTER
     call SetRegister
+    call PrepareNextSlice
   ret
 
   PrepareNextSlice:
@@ -100,5 +103,6 @@
   RasterEffectTable:
     .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), SCROLL_VALUE_1
     .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1), SCROLL_VALUE_2
+    .db ((ONE_ROW*SLICE_POINT_3)+SLICE_POINT_3-1), SCROLL_VALUE_3
 
 .ends
