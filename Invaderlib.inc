@@ -4,7 +4,8 @@
 .equ RASTER_INTERRUPT_VALUE ONE_ROW
 .equ SLICE_POINT_1 5
 .equ SLICE_POINT_2 8
-.equ SCROLL_VALUE 8
+.equ SCROLL_VALUE_1 8
+.equ SCROLL_VALUE_2 (-8)
 
 ; -----------------------------------------------------------------------------
 .macro LoadImage
@@ -57,7 +58,6 @@
 ; -----------------------------------------------------------------------------
 .section "Misc Development" free
 ; -----------------------------------------------------------------------------
-
   CreateSlice:
     call GetScrollValue                 ; Return scroll value in A.
     ld b,HORIZONTAL_SCROLL_REGISTER
@@ -71,7 +71,7 @@
   ret
 
   GetSlicePoint:
-  ; Returns slicepoint in A.
+    ; Returns slicepoint in A.
     ld hl,SlicePointTable
     ld a,(hl)
   ret
@@ -87,9 +87,11 @@
     .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1)
 
   ScrollValueTable:
-    .db SCROLL_VALUE
+    .db SCROLL_VALUE_1
+    .db SCROLL_VALUE_2
 
   RasterEffectTable:
-    .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), SCROLL_VALUE
+    .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), SCROLL_VALUE_1
+    .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1), SCROLL_VALUE_2
 
 .ends
