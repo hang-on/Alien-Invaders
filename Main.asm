@@ -48,6 +48,7 @@
 
   Main:
     call AwaitFrameInterrupt
+    call ResetScroll
 
   jp Main
 

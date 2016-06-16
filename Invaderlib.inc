@@ -34,14 +34,27 @@
 .endm
 
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-.ramsection "Raster Interrupt Variables" slot 3
+.ramsection "Invader Library Variables" slot 3
 
 .ends
 ; -----------------------------------------------------------------------------
 .section "Raster Interrupt Handler" free
 ; -----------------------------------------------------------------------------
   HandleRasterInterrupt:
-
+    in a,(V_COUNTER_PORT)
+    cp (RASTER_INTERRUPT_VALUE*2)+1
+    ret nz
+      ld a,8
+      ld b,HORIZONTAL_SCROLL_REGISTER
+      call SetRegister
   ret
 
+.ends
+
+.section "Development" free
+  ResetScroll:
+    ld a,0
+    ld b,HORIZONTAL_SCROLL_REGISTER
+    call SetRegister
+  ret
 .ends
