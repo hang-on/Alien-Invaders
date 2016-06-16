@@ -40,15 +40,11 @@
   call LoadVRam
 .endm
 
-.struct RasterEffectStruct
-  NextSlice db
-  Scroll db
-  TablePointer dw
-.endst
-
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Invader Library Variables" slot 3
-  RasterEffect INSTANCEOF RasterEffectStruct
+  RasterEffect.NextSlice db
+  RasterEffect.Scroll db
+  RasterEffect.TablePointer dw
 .ends
 ; -----------------------------------------------------------------------------
 .section "Raster Interrupt Handler" free
@@ -84,7 +80,7 @@
     ld (RasterEffect.TablePointer),hl
   ret
 
-  RasterEffect_Frame:
+  RasterEffect.Frame:
     ld hl,RasterEffectTable
     ld (RasterEffect.TablePointer),hl
     call RasterEffect_PrepareNextSlice
@@ -94,7 +90,7 @@
     call SetRegister
   ret
 
-  RasterEffect_Initialize:
+  RasterEffect.Initialize:
     ld a,RASTER_INTERRUPT_VALUE
     ld b,RASTER_INTERRUPT_REGISTER
     call SetRegister

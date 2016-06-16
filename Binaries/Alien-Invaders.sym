@@ -15,15 +15,14 @@
 0000:012e LoadCRam
 0000:010b LoadVRam
 0000:005d SetRegister
-0000:c004 RasterEffect
 0000:c004 RasterEffect.NextSlice
 0000:c005 RasterEffect.Scroll
 0000:c006 RasterEffect.TablePointer
 0000:013b HandleRasterInterrupt
 0000:00b1 RasterEffect_CreateSlice
 0000:00bd RasterEffect_PrepareNextSlice
-0000:00ce RasterEffect_Frame
-0000:00df RasterEffect_Initialize
+0000:00ce RasterEffect.Frame
+0000:00df RasterEffect.Initialize
 0000:00e7 RasterEffectTable
 0000:0071 SetupMain
 0000:00a8 Main

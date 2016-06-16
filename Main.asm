@@ -32,7 +32,7 @@
 
     LoadImage MockupAssets,MockupAssetsEnd
 
-    call RasterEffect_Initialize
+    call RasterEffect.Initialize
 
     ld a,FULL_SCROLL_SHOW_LEFT_COLUMN_KEEP_SPRITES_ENABLE_RASTER_INT
     ld b,0
@@ -46,7 +46,7 @@
 
   Main:
     call AwaitFrameInterrupt
-    call RasterEffect_Frame
+    call RasterEffect.Frame
   jp Main
 
 .ends
