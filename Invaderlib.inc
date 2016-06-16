@@ -67,14 +67,12 @@
 
   GetScrollValue:
     ; Return scroll value in A.
-    ld hl,ScrollValueTable
-    ld a,(hl)
+    ld a,(ScrollValue)
   ret
 
   GetSlicePoint:
     ; Returns slicepoint in A.
-    ld hl,SlicePointTable
-    ld a,(hl)
+    ld a,(SlicePoint)
   ret
 
   ResetScroll:
@@ -87,9 +85,13 @@
     ld a,RASTER_INTERRUPT_VALUE
     ld b,RASTER_INTERRUPT_REGISTER
     call SetRegister
+
     ld hl,RasterEffectTable
-    ld a,((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1)
+    ld a,(hl)
     ld (SlicePoint),a
+    inc hl
+    ld a,(hl)
+    ld (ScrollValue),a
   ret
 
   SlicePointTable:
