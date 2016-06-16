@@ -4,7 +4,7 @@
 .equ RASTER_INTERRUPT_VALUE ONE_ROW
 .equ SLICE_POINT_1 5
 .equ SLICE_POINT_2 10
-.equ SLICE_POINT_3 15
+.equ SLICE_POINT_3 13
 .equ SCROLL_VALUE_1 8
 .equ SCROLL_VALUE_2 (-8)
 .equ SCROLL_VALUE_3 0
@@ -70,10 +70,10 @@
     ld a,(RasterEffect.Scroll)
     ld b,HORIZONTAL_SCROLL_REGISTER
     call SetRegister
-    call PrepareNextSlice
+    call RasterEffect_PrepareNextSlice
   ret
 
-  PrepareNextSlice:
+  RasterEffect_PrepareNextSlice:
     ld hl,(RasterEffect.TablePointer)
     ld a,(hl)
     ld (RasterEffect.NextSlice),a
@@ -87,7 +87,7 @@
   RasterEffect_Frame:
     ld hl,RasterEffectTable
     ld (RasterEffect.TablePointer),hl
-    call PrepareNextSlice
+    call RasterEffect_PrepareNextSlice
 
     ld a,0
     ld b,HORIZONTAL_SCROLL_REGISTER
