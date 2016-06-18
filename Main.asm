@@ -48,7 +48,6 @@
     call AwaitFrameInterrupt
     call RasterEffect.Frame
   jp Main
-
 .ends
 
 
