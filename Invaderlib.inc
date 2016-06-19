@@ -40,7 +40,7 @@
   call LoadVRam
 .endm
 
-.struct RasterEffectStruct
+.struct RasterEffect
   NextSlice db
   Scroll db
   TablePointer dw
@@ -48,7 +48,7 @@
 
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Invader Library Variables" slot 3
-  RasterEffect instanceof RasterEffectStruct
+  BattleRasterEffect instanceof RasterEffect
 .ends
 ; -----------------------------------------------------------------------------
 .section "Raster Interrupt Handler" free
@@ -56,7 +56,7 @@
   HandleRasterInterrupt:
     in a,(V_COUNTER_PORT)
     ld b,a
-    ld a,(RasterEffect.NextSlice)
+    ld a,(BattleRasterEffect.NextSlice)
     cp b
     call z,RasterEffect_CreateSlice
   ret
@@ -67,26 +67,26 @@
 .section "Misc Development" free
 ; -----------------------------------------------------------------------------
   RasterEffect_CreateSlice:
-    ld a,(RasterEffect.Scroll)
+    ld a,(BattleRasterEffect.Scroll)
     ld b,HORIZONTAL_SCROLL_REGISTER
     call SetRegister
     call RasterEffect_PrepareNextSlice
   ret
 
   RasterEffect_PrepareNextSlice:
-    ld hl,(RasterEffect.TablePointer)
+    ld hl,(BattleRasterEffect.TablePointer)
     ld a,(hl)
-    ld (RasterEffect.NextSlice),a
+    ld (BattleRasterEffect.NextSlice),a
     inc hl
     ld a,(hl)
-    ld (RasterEffect.Scroll),a
+    ld (BattleRasterEffect.Scroll),a
     inc hl
-    ld (RasterEffect.TablePointer),hl
+    ld (BattleRasterEffect.TablePointer),hl
   ret
 
   RasterEffect.Frame:
     ld hl,RasterEffectTable
-    ld (RasterEffect.TablePointer),hl
+    ld (BattleRasterEffect.TablePointer),hl
     call RasterEffect_PrepareNextSlice
 
     ld a,0
