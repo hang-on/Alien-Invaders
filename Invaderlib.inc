@@ -45,6 +45,7 @@
   RasterEffect.NextSliceLine db
   RasterEffect.Scroll db
   RasterEffect.TablePointer dw
+  RasterEffect.TableBaseAddress dw ; <<--- New!
 .ends
 ; -----------------------------------------------------------------------------
 .section "Raster Effect Functions" free
