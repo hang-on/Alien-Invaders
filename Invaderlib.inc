@@ -42,7 +42,7 @@
 
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Raster Effect Variables" slot 3
-  RasterEffect.NextSlice db
+  RasterEffect.NextSliceLine db
   RasterEffect.Scroll db
   RasterEffect.TablePointer dw
 .ends
@@ -52,7 +52,7 @@
   RasterEffect.HandleRasterInterrupt:
     in a,(V_COUNTER_PORT)
     ld b,a
-    ld a,(RasterEffect.NextSlice)
+    ld a,(RasterEffect.NextSliceLine)
     cp b
     call z,RasterEffect.CreateSlice
   ret
@@ -67,7 +67,7 @@
   RasterEffect.PrepareNextSlice:
     ld hl,(RasterEffect.TablePointer)
     ld a,(hl)
-    ld (RasterEffect.NextSlice),a
+    ld (RasterEffect.NextSliceLine),a
     inc hl
     ld a,(hl)
     ld (RasterEffect.Scroll),a
@@ -76,7 +76,6 @@
   ret
 
   RasterEffect.Frame:
-    ld hl,RasterEffectTable
     ld (RasterEffect.TablePointer),hl
     call RasterEffect.PrepareNextSlice
 
@@ -90,10 +89,4 @@
     ld b,RASTER_INTERRUPT_REGISTER
     call SetRegister
   ret
-
-  RasterEffectTable:
-    .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), SCROLL_VALUE_1
-    .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1), SCROLL_VALUE_2
-    .db ((ONE_ROW*SLICE_POINT_3)+SLICE_POINT_3-1), SCROLL_VALUE_3
-
 .ends

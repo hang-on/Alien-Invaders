@@ -47,6 +47,8 @@
 
   Main:
     call AwaitFrameInterrupt
+
+    ld hl,BattleRasterEffectTable
     call RasterEffect.Frame
   jp Main
 .ends
@@ -59,6 +61,12 @@
 ; -----------------------------------------------------------------------------
   .section "Data" free
 ; -----------------------------------------------------------------------------
+  BattleRasterEffectTable:
+    .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), SCROLL_VALUE_1
+    .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1), SCROLL_VALUE_2
+    .db ((ONE_ROW*SLICE_POINT_3)+SLICE_POINT_3-1), SCROLL_VALUE_3
+
+
   MockupAssets:
     .include "MockupAssets.inc"
   MockupAssetsEnd:
