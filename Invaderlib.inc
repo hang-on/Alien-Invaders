@@ -40,11 +40,15 @@
   call LoadVRam
 .endm
 
+.struct RasterEffectStruct
+  NextSlice db
+  Scroll db
+  TablePointer dw
+.endst
+
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Invader Library Variables" slot 3
-  RasterEffect.NextSlice db
-  RasterEffect.Scroll db
-  RasterEffect.TablePointer dw
+  RasterEffect instanceof RasterEffectStruct
 .ends
 ; -----------------------------------------------------------------------------
 .section "Raster Interrupt Handler" free

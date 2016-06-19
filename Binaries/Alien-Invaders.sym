@@ -15,6 +15,7 @@
 0000:012e LoadCRam
 0000:010b LoadVRam
 0000:005d SetRegister
+0000:c004 RasterEffect
 0000:c004 RasterEffect.NextSlice
 0000:c005 RasterEffect.Scroll
 0000:c006 RasterEffect.TablePointer
