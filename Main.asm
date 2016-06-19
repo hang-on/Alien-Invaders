@@ -12,7 +12,9 @@
     in a,CONTROL_PORT
     ld (VDPStatus),a
     bit 7,a
-    call z,HandleRasterInterrupt
+    jp nz,+
+      call HandleRasterInterrupt
+    +:
   exx
   pop af
   ei
@@ -22,7 +24,6 @@
 
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Main variables" slot 3
-
 .ends
 .bank 0 slot 0
 ; -----------------------------------------------------------------------------
