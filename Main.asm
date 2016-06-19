@@ -13,7 +13,7 @@
     ld (VDPStatus),a
     bit 7,a
     jp nz,+
-      call HandleRasterInterrupt
+      call RasterEffect.HandleRasterInterrupt
     +:
   exx
   pop af

@@ -47,29 +47,24 @@
   RasterEffect.TablePointer dw
 .ends
 ; -----------------------------------------------------------------------------
-.section "Raster Interrupt Handler" free
+.section "Raster Effect Functions" free
 ; -----------------------------------------------------------------------------
-  HandleRasterInterrupt:
+  RasterEffect.HandleRasterInterrupt:
     in a,(V_COUNTER_PORT)
     ld b,a
     ld a,(RasterEffect.NextSlice)
     cp b
-    call z,RasterEffect_CreateSlice
+    call z,RasterEffect.CreateSlice
   ret
 
-.ends
-
-; -----------------------------------------------------------------------------
-.section "Misc Development" free
-; -----------------------------------------------------------------------------
-  RasterEffect_CreateSlice:
+  RasterEffect.CreateSlice:
     ld a,(RasterEffect.Scroll)
     ld b,HORIZONTAL_SCROLL_REGISTER
     call SetRegister
-    call RasterEffect_PrepareNextSlice
+    call RasterEffect.PrepareNextSlice
   ret
 
-  RasterEffect_PrepareNextSlice:
+  RasterEffect.PrepareNextSlice:
     ld hl,(RasterEffect.TablePointer)
     ld a,(hl)
     ld (RasterEffect.NextSlice),a
@@ -83,7 +78,7 @@
   RasterEffect.Frame:
     ld hl,RasterEffectTable
     ld (RasterEffect.TablePointer),hl
-    call RasterEffect_PrepareNextSlice
+    call RasterEffect.PrepareNextSlice
 
     ld a,0
     ld b,HORIZONTAL_SCROLL_REGISTER
