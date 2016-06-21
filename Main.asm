@@ -33,6 +33,7 @@
 
     LoadImage MockupAssets,MockupAssetsEnd
 
+    ld hl,BattleRasterEffectTable
     call RasterEffect.Initialize
 
     ld a,FULL_SCROLL_SHOW_LEFT_COLUMN_KEEP_SPRITES_ENABLE_RASTER_INT
@@ -48,7 +49,6 @@
   Main:
     call AwaitFrameInterrupt
 
-    ld hl,BattleRasterEffectTable
     call RasterEffect.Frame
   jp Main
 .ends

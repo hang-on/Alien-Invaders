@@ -66,6 +66,7 @@
   ret
 
   RasterEffect.Frame:
+    ld hl,(RasterEffect.TableBaseAddress)
     ld (RasterEffect.TablePointer),hl
     call RasterEffect.PrepareNextSlice
     ld a,0
@@ -74,6 +75,7 @@
   ret
 
   RasterEffect.Initialize:
+    ld (RasterEffect.TableBaseAddress),hl
     ld a,RASTER_INTERRUPT_VALUE
     ld b,RASTER_INTERRUPT_REGISTER
     call SetRegister
