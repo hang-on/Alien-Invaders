@@ -45,17 +45,18 @@
   RasterEffect.NextSliceLine db
   RasterEffect.Scroll db
   RasterEffect.TablePointer dw
-  RasterEffect.TableBaseAddress dw ; <<--- New!
+  RasterEffect.TableBaseAddress dw
 .ends
 ; -----------------------------------------------------------------------------
 .section "Raster Effect Functions" free
 ; -----------------------------------------------------------------------------
-  RasterEffect.HandleRasterInterrupt:
-    in a,(V_COUNTER_PORT)
-    ld b,a
-    ld a,(RasterEffect.NextSliceLine)
-    cp b
-    call z,RasterEffect.CreateSlice
+  RasterEffect.BeginNewFrame:
+    ld hl,(RasterEffect.TableBaseAddress)
+    ld (RasterEffect.TablePointer),hl
+    call RasterEffect.PrepareNextSlice
+    ld a,0
+    ld b,HORIZONTAL_SCROLL_REGISTER
+    call SetRegister
   ret
 
   RasterEffect.CreateSlice:
@@ -65,13 +66,12 @@
     call RasterEffect.PrepareNextSlice
   ret
 
-  RasterEffect.Frame:
-    ld hl,(RasterEffect.TableBaseAddress)
-    ld (RasterEffect.TablePointer),hl
-    call RasterEffect.PrepareNextSlice
-    ld a,0
-    ld b,HORIZONTAL_SCROLL_REGISTER
-    call SetRegister
+  RasterEffect.HandleRasterInterrupt:
+    in a,(V_COUNTER_PORT)
+    ld b,a
+    ld a,(RasterEffect.NextSliceLine)
+    cp b
+    call z,RasterEffect.CreateSlice
   ret
 
   RasterEffect.Initialize:

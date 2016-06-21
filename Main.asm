@@ -49,7 +49,9 @@
   Main:
     call AwaitFrameInterrupt
 
-    call RasterEffect.Frame
+    call RasterEffect.BeginNewFrame
+
+    ; Non-vblank stuff below this line...
   jp Main
 .ends
 

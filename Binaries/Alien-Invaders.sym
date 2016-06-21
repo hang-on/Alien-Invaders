@@ -19,9 +19,9 @@
 0000:c001 RasterEffect.Scroll
 0000:c002 RasterEffect.TablePointer
 0000:c004 RasterEffect.TableBaseAddress
-0000:0071 RasterEffect.HandleRasterInterrupt
-0000:007c RasterEffect.CreateSlice
-0000:0088 RasterEffect.Frame
+0000:0071 RasterEffect.BeginNewFrame
+0000:0082 RasterEffect.CreateSlice
+0000:008e RasterEffect.HandleRasterInterrupt
 0000:0099 RasterEffect.Initialize
 0000:00a4 RasterEffect.PrepareNextSlice
 0000:00b5 SetupMain
