@@ -40,6 +40,8 @@
 .section "Raster Effect Functions" free
 ; -----------------------------------------------------------------------------
   RasterEffect.BeginNewFrame:
+    ; Set RasterEffect.TablePointer to the base of the raster effect table
+    ; to be used to make raster effects during this frame.
     ld (RasterEffect.TablePointer),hl
     ld a,0
     ld b,HORIZONTAL_SCROLL_REGISTER
