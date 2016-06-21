@@ -12,6 +12,19 @@
 .equ SCROLL_VALUE_3 0
 
 
+.macro MakeRasterEffectTable
+    ; FIXME: Make a header like .db NARGS...
+    .rept NARGS
+      .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), \1
+      .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1), \1-16
+      .db ((ONE_ROW*SLICE_POINT_3)+SLICE_POINT_3-1), 0
+      .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), 0
+      .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1), 0
+      .db ((ONE_ROW*SLICE_POINT_3)+SLICE_POINT_3-1), 0
+      .SHIFT
+    .endr
+.endm
+
 .bank 0 slot 0
 .org $0038
 ; ---------------------------------------------------------------------------
@@ -43,7 +56,7 @@
 
     LoadImage MockupAssets,MockupAssetsEnd
 
-    ld a,RASTER_INTERRUPT_VALUE    
+    ld a,RASTER_INTERRUPT_VALUE
     call RasterEffect.Initialize
 
     ld a,FULL_SCROLL_SHOW_LEFT_COLUMN_KEEP_SPRITES_ENABLE_RASTER_INT
@@ -75,10 +88,7 @@
   .section "Data" free
 ; -----------------------------------------------------------------------------
   BattleRasterEffectTable:
-    .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), SCROLL_VALUE_1
-    .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1), SCROLL_VALUE_2
-    .db ((ONE_ROW*SLICE_POINT_3)+SLICE_POINT_3-1), SCROLL_VALUE_3
-
+    MakeRasterEffectTable 8
 
   MockupAssets:
     .include "MockupAssets.inc"

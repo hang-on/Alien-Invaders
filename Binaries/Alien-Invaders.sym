@@ -22,8 +22,8 @@
 0000:0071 SetupMain
 0000:00aa Main
 0002:8000 BattleRasterEffectTable
-0002:8006 MockupAssets
-0002:8006 MockupPalette
-0002:8016 MockupTilemap
-0002:8616 MockupTiles
-0002:9096 MockupAssetsEnd
+0002:800c MockupAssets
+0002:800c MockupPalette
+0002:801c MockupTilemap
+0002:861c MockupTiles
+0002:909c MockupAssetsEnd
