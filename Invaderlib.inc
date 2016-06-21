@@ -34,8 +34,6 @@
 
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Raster Effect Variables" slot 3
-  RasterEffect.NextSliceLine db
-  RasterEffect.Scroll db
   RasterEffect.TablePointer dw
   RasterEffect.TableBaseAddress dw
 .ends
@@ -45,17 +43,9 @@
   RasterEffect.BeginNewFrame:
     ld hl,(RasterEffect.TableBaseAddress)
     ld (RasterEffect.TablePointer),hl
-    ;call RasterEffect.PrepareNextSlice
     ld a,0
     ld b,HORIZONTAL_SCROLL_REGISTER
     call SetRegister
-  ret
-
-  RasterEffect.CreateSlice:
-    ld a,(RasterEffect.Scroll)
-    ld b,HORIZONTAL_SCROLL_REGISTER
-    call SetRegister
-    ;call RasterEffect.PrepareNextSlice
   ret
 
   RasterEffect.HandleRasterInterrupt:
@@ -78,17 +68,6 @@
     ld a,RASTER_INTERRUPT_VALUE
     ld b,RASTER_INTERRUPT_REGISTER
     call SetRegister
-  ret
-
-  RasterEffect.PrepareNextSlice:
-    ld hl,(RasterEffect.TablePointer)
-    ld a,(hl)
-    ld (RasterEffect.NextSliceLine),a
-    inc hl
-    ld a,(hl)
-    ld (RasterEffect.Scroll),a
-    inc hl
-    ld (RasterEffect.TablePointer),hl
   ret
 
 .ends
