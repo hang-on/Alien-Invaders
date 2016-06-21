@@ -35,13 +35,11 @@
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Raster Effect Variables" slot 3
   RasterEffect.TablePointer dw
-  RasterEffect.TableBaseAddress dw
 .ends
 ; -----------------------------------------------------------------------------
 .section "Raster Effect Functions" free
 ; -----------------------------------------------------------------------------
   RasterEffect.BeginNewFrame:
-    ld hl,(RasterEffect.TableBaseAddress)
     ld (RasterEffect.TablePointer),hl
     ld a,0
     ld b,HORIZONTAL_SCROLL_REGISTER
@@ -64,7 +62,6 @@
   ret
 
   RasterEffect.Initialize:
-    ld (RasterEffect.TableBaseAddress),hl
     ld a,RASTER_INTERRUPT_VALUE
     ld b,RASTER_INTERRUPT_REGISTER
     call SetRegister

@@ -1,7 +1,7 @@
 .include "Base.inc"
 .include "Invaderlib.inc"
 
-; Definitions for raster effects 
+; Definitions for raster effects
 .equ ONE_ROW 7
 .equ RASTER_INTERRUPT_VALUE ONE_ROW
 .equ SLICE_POINT_1 5
@@ -43,7 +43,6 @@
 
     LoadImage MockupAssets,MockupAssetsEnd
 
-    ld hl,BattleRasterEffectTable
     call RasterEffect.Initialize
 
     ld a,FULL_SCROLL_SHOW_LEFT_COLUMN_KEEP_SPRITES_ENABLE_RASTER_INT
@@ -59,6 +58,7 @@
   Main:
     call AwaitFrameInterrupt
 
+    ld hl,BattleRasterEffectTable
     call RasterEffect.BeginNewFrame
 
     ; Non-vblank stuff below this line...
