@@ -21,7 +21,8 @@
 0000:00d6 RasterEffect.Initialize
 0000:0071 SetupMain
 0000:00aa Main
-0002:8000 BattleRasterEffectTable
+0002:8000 BattleRasterEffectTable1
+0002:8006 BattleRasterEffectTable2
 0002:800c MockupAssets
 0002:800c MockupPalette
 0002:801c MockupTilemap

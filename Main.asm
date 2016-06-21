@@ -13,16 +13,15 @@
 
 
 .macro MakeRasterEffectTable
-    ; FIXME: Make a header like .db NARGS...
-    .rept NARGS
+    .if \1 != 0
       .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), \1
       .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1), \1-16
       .db ((ONE_ROW*SLICE_POINT_3)+SLICE_POINT_3-1), 0
+    .else
       .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), 0
       .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1), 0
       .db ((ONE_ROW*SLICE_POINT_3)+SLICE_POINT_3-1), 0
-      .SHIFT
-    .endr
+    .endif
 .endm
 
 .bank 0 slot 0
@@ -72,7 +71,7 @@
   Main:
     call AwaitFrameInterrupt
 
-    ld hl,BattleRasterEffectTable
+    ld hl,BattleRasterEffectTable1
     call RasterEffect.BeginNewFrame
 
     ; Non-vblank stuff below this line...
@@ -87,9 +86,10 @@
 ; -----------------------------------------------------------------------------
   .section "Data" free
 ; -----------------------------------------------------------------------------
-  BattleRasterEffectTable:
+  BattleRasterEffectTable1:
     MakeRasterEffectTable 8
-
+  BattleRasterEffectTable2:
+    MakeRasterEffectTable 0
   MockupAssets:
     .include "MockupAssets.inc"
   MockupAssetsEnd:
