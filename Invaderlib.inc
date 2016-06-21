@@ -65,6 +65,20 @@
     call RasterEffect.PrepareNextSlice
   ret
 
+  RasterEffect.Frame:
+    ld (RasterEffect.TablePointer),hl
+    call RasterEffect.PrepareNextSlice
+    ld a,0
+    ld b,HORIZONTAL_SCROLL_REGISTER
+    call SetRegister
+  ret
+
+  RasterEffect.Initialize:
+    ld a,RASTER_INTERRUPT_VALUE
+    ld b,RASTER_INTERRUPT_REGISTER
+    call SetRegister
+  ret
+
   RasterEffect.PrepareNextSlice:
     ld hl,(RasterEffect.TablePointer)
     ld a,(hl)
@@ -76,18 +90,4 @@
     ld (RasterEffect.TablePointer),hl
   ret
 
-  RasterEffect.Frame:
-    ld (RasterEffect.TablePointer),hl
-    call RasterEffect.PrepareNextSlice
-
-    ld a,0
-    ld b,HORIZONTAL_SCROLL_REGISTER
-    call SetRegister
-  ret
-
-  RasterEffect.Initialize:
-    ld a,RASTER_INTERRUPT_VALUE
-    ld b,RASTER_INTERRUPT_REGISTER
-    call SetRegister
-  ret
 .ends
