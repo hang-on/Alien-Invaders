@@ -1,6 +1,16 @@
 .include "Base.inc"
 .include "Invaderlib.inc"
 
+; Definitions for raster effects 
+.equ ONE_ROW 7
+.equ RASTER_INTERRUPT_VALUE ONE_ROW
+.equ SLICE_POINT_1 5
+.equ SLICE_POINT_2 10
+.equ SLICE_POINT_3 13
+.equ SCROLL_VALUE_1 8
+.equ SCROLL_VALUE_2 (-8)
+.equ SCROLL_VALUE_3 0
+
 
 .bank 0 slot 0
 .org $0038
