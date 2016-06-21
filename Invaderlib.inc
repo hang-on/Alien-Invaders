@@ -45,7 +45,7 @@
   RasterEffect.BeginNewFrame:
     ld hl,(RasterEffect.TableBaseAddress)
     ld (RasterEffect.TablePointer),hl
-    call RasterEffect.PrepareNextSlice
+    ;call RasterEffect.PrepareNextSlice
     ld a,0
     ld b,HORIZONTAL_SCROLL_REGISTER
     call SetRegister
@@ -55,15 +55,22 @@
     ld a,(RasterEffect.Scroll)
     ld b,HORIZONTAL_SCROLL_REGISTER
     call SetRegister
-    call RasterEffect.PrepareNextSlice
+    ;call RasterEffect.PrepareNextSlice
   ret
 
   RasterEffect.HandleRasterInterrupt:
     in a,(V_COUNTER_PORT)
     ld b,a
-    ld a,(RasterEffect.NextSliceLine)
+    ld hl,(RasterEffect.TablePointer)
+    ld a,(hl)
     cp b
-    call z,RasterEffect.CreateSlice
+    ret nz
+    inc hl
+    ld a,(hl)
+    ld b,HORIZONTAL_SCROLL_REGISTER
+    call SetRegister
+    inc hl
+    ld (RasterEffect.TablePointer),hl
   ret
 
   RasterEffect.Initialize:
