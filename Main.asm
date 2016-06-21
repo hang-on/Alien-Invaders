@@ -43,6 +43,7 @@
 
     LoadImage MockupAssets,MockupAssetsEnd
 
+    ld a,RASTER_INTERRUPT_VALUE    
     call RasterEffect.Initialize
 
     ld a,FULL_SCROLL_SHOW_LEFT_COLUMN_KEEP_SPRITES_ENABLE_RASTER_INT

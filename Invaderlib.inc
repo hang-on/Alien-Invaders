@@ -40,8 +40,11 @@
 .section "Raster Effect Functions" free
 ; -----------------------------------------------------------------------------
   RasterEffect.BeginNewFrame:
-    ; Set RasterEffect.TablePointer to the base of the raster effect table
-    ; to be used to make raster effects during this frame.
+    ; Point RasterEffect.TablePointer to the base of the raster effect table
+    ; to be used to make raster effects during this frame. Then reset the
+    ; vdp's hscroll register. Assumes blanked display and no interrupts.
+    ; Entry: HL = Base address of this frame's raster effect table.
+    ; Uses: AF, B, HL
     ld (RasterEffect.TablePointer),hl
     ld a,0
     ld b,HORIZONTAL_SCROLL_REGISTER
@@ -49,6 +52,12 @@
   ret
 
   RasterEffect.HandleRasterInterrupt:
+    ; This function assumes it is called from the interrupt handler. Check if
+    ; the current line = next slice point, which is read from this frame's
+    ; raster effect table. If we are at a slice point then slice the screen by
+    ; reading and applying the hscroll value from the raster effect table, and
+    ; forward the table pointer accordingly.
+    ; Uses: AF, B, HL
     in a,(V_COUNTER_PORT)
     ld b,a
     ld hl,(RasterEffect.TablePointer)
@@ -64,7 +73,11 @@
   ret
 
   RasterEffect.Initialize:
-    ld a,RASTER_INTERRUPT_VALUE
+    ; Initialize the raster effect engine.
+    ; Assumes blanked display and no interrupts.
+    ; Entry: A = Value to load into the raster interrupt register (number of
+    ;            lines per interrupt - 1).
+    ; Uses: AF, B
     ld b,RASTER_INTERRUPT_REGISTER
     call SetRegister
   ret
