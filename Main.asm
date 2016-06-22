@@ -89,26 +89,26 @@
 .equ SLICE_POINT_2 10
 .equ SLICE_POINT_3 13
 
-.equ SHIELDS_ON 1
-.equ SHIELDS_OFF 0
+.equ ALIGN_SLICES 1
+.equ SKEW_SLICES 0
 
 
-.macro MakeRasterEffectTable
-  .if \2 == SHIELDS_OFF
-    .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), \1+8
-    .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1), \1-8
+.macro MakeRasterEffectTable ARGS OFFSET, SLICE_MODE
+  .if SLICE_MODE == SKEW_SLICES
+    .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), OFFSET+8
+    .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1), OFFSET-8
     .db ((ONE_ROW*SLICE_POINT_3)+SLICE_POINT_3-1), 0
   .else
-    .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), 0+\1
-    .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1), 0+\1
+    .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), OFFSET
+    .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1), OFFSET
     .db ((ONE_ROW*SLICE_POINT_3)+SLICE_POINT_3-1), 0
   .endif
 .endm
 
   BattleRasterEffectTable1:
-    MakeRasterEffectTable 4, SHIELDS_OFF
+    MakeRasterEffectTable 4, SKEW_SLICES
   BattleRasterEffectTable2:
-    MakeRasterEffectTable 4, SHIELDS_ON
+    MakeRasterEffectTable 4, ALIGN_SLICES
   MockupAssets:
     .include "MockupAssets.inc"
   MockupAssetsEnd:
