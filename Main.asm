@@ -94,21 +94,21 @@
 
 
 .macro MakeRasterEffectTable
-  .if \1 != 0
-    .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), \1
-    .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1), \1-16
+  .if \2 == SHIELDS_OFF
+    .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), \1+8
+    .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1), \1-8
     .db ((ONE_ROW*SLICE_POINT_3)+SLICE_POINT_3-1), 0
   .else
-    .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), 0
-    .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1), 0
+    .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), 0+\1
+    .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1), 0+\1
     .db ((ONE_ROW*SLICE_POINT_3)+SLICE_POINT_3-1), 0
   .endif
 .endm
 
   BattleRasterEffectTable1:
-    MakeRasterEffectTable 12
+    MakeRasterEffectTable 4, SHIELDS_OFF
   BattleRasterEffectTable2:
-    MakeRasterEffectTable 4
+    MakeRasterEffectTable 4, SHIELDS_ON
   MockupAssets:
     .include "MockupAssets.inc"
   MockupAssetsEnd:
