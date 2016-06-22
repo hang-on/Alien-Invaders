@@ -4,6 +4,9 @@
 ; Definitions for raster effects
 .equ ONE_ROW 7
 .equ RASTER_INTERRUPT_VALUE ONE_ROW
+.equ SLICE_POINT_1 5
+.equ SLICE_POINT_2 10
+.equ SLICE_POINT_3 13
 
 .bank 0 slot 0
 .org $0038
@@ -85,14 +88,8 @@
 ; -----------------------------------------------------------------------------
   .section "Data" free
 ; -----------------------------------------------------------------------------
-.equ SLICE_POINT_1 5
-.equ SLICE_POINT_2 10
-.equ SLICE_POINT_3 13
-
 .equ ALIGN_SLICES 1
 .equ SKEW_SLICES 0
-
-
 .macro MakeRasterEffectTable ARGS OFFSET, SLICE_MODE
   .if SLICE_MODE == SKEW_SLICES
     .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), OFFSET+8
