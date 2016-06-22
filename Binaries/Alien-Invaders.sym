@@ -19,6 +19,7 @@
 0000:00da RasterEffect.BeginNewFrame
 0000:00e5 RasterEffect.HandleRasterInterrupt
 0000:00fa RasterEffect.Initialize
+0000:c009 Timer.Value
 0000:c004 Timer
 0000:c005 NextRasterEffectTable
 0000:0071 SetupMain

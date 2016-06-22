@@ -64,6 +64,7 @@
     call RasterEffect.BeginNewFrame
 
     ; Non-vblank stuff below this line...
+
     ld a,(Timer)
     dec a
     ld (Timer),a
