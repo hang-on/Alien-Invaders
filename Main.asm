@@ -46,6 +46,8 @@
 
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Main variables" slot 3
+  Timer db
+  NextRasterEffectTable dw
 .ends
 .bank 0 slot 0
 ; -----------------------------------------------------------------------------
@@ -54,6 +56,9 @@
   SetupMain:
 
     LoadImage MockupAssets,MockupAssetsEnd
+
+    ld hl,BattleRasterEffectTable1
+    ld (NextRasterEffectTable),hl
 
     ld a,RASTER_INTERRUPT_VALUE
     call RasterEffect.Initialize
@@ -71,10 +76,23 @@
   Main:
     call AwaitFrameInterrupt
 
-    ld hl,BattleRasterEffectTable1
+    ld hl,(NextRasterEffectTable)
     call RasterEffect.BeginNewFrame
 
     ; Non-vblank stuff below this line...
+    ld a,(Timer)
+    dec a
+    ld (Timer),a
+    cp 127
+    jp nc,+
+      ld hl,BattleRasterEffectTable1
+      ld (NextRasterEffectTable),hl
+      jp ++
+    +:
+      ld hl,BattleRasterEffectTable2
+      ld (NextRasterEffectTable),hl
+      jp ++
+    ++:
   jp Main
 .ends
 
