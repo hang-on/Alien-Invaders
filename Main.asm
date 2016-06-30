@@ -110,7 +110,8 @@
     call Timer.Countdown
     call Timer.IsDone
     jp nc,+
-
+      ld a,127
+      call Timer.Setup
     +:
 
   jp Main
