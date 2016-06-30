@@ -51,10 +51,6 @@
     ld a,RASTER_INTERRUPT_VALUE
     call RasterEffect.Initialize
 
-    ; FIXME: Should be set timer func.
-    ld a,127
-    ld (Timer),a
-
     ld a,127
     call Timer.Setup
 
@@ -78,14 +74,17 @@
 
     ; Non-vblank stuff below this line...
 
+    call Timer.Countdown
+    call Timer.IsDone
+    jp nc,+
+      ld a,127
+      call Timer.Setup
+      call SetNextRasterEffectTable
+    +:
 
+  jp Main
 
-    ld a,(Timer)
-    dec a
-    ld (Timer),a
-    cp 0
-    jp nz,++
-
+  SetNextRasterEffectTable:
     ld a,(MetaTableIndex)
     inc a
     cp 2
@@ -103,18 +102,7 @@
     ld h,(hl)
     ld l,a
     ld (NextRasterEffectTable),hl
-    ld a,127
-    ld (Timer),a
-    ++:
-
-    call Timer.Countdown
-    call Timer.IsDone
-    jp nc,+
-      ld a,127
-      call Timer.Setup
-    +:
-
-  jp Main
+  ret
 .ends
 
 
@@ -140,9 +128,9 @@
 .endm
 
   BattleRasterEffectTable1:
-    MakeRasterEffectTable 4, SKEW_SLICES
+    MakeRasterEffectTable 0, ALIGN_SLICES
   BattleRasterEffectTable2:
-    MakeRasterEffectTable 4, ALIGN_SLICES
+    MakeRasterEffectTable 0, SKEW_SLICES
 
   MockupAssets:
     .include "MockupAssets.inc"
