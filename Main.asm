@@ -37,6 +37,7 @@
 .ramsection "Main variables" slot 3
   NextRasterEffectTable dw
   MetaTableIndex db
+  MetaTablePointer dw
 .ends
 .bank 0 slot 0
 ; -----------------------------------------------------------------------------
@@ -48,6 +49,8 @@
 
     ld hl,BattleRasterEffectTable1
     ld (NextRasterEffectTable),hl
+    ld hl,BattleRasterEffectMetaTable
+    ld (MetaTablePointer),hl
 
     ld a,RASTER_INTERRUPT_VALUE
     call RasterEffect.Initialize
@@ -77,11 +80,11 @@
 
     call Timer.Countdown
     call Timer.IsDone
-    jp nc,+
+    jp nc,+++
       ld a,ENEMY_MOVE_INTERVAL
       call Timer.Setup
       call SetNextRasterEffectTable
-    +:
+    +++:
 
   jp Main
 
@@ -104,6 +107,7 @@
     ld l,a
     ld (NextRasterEffectTable),hl
   ret
+
 .ends
 
 
