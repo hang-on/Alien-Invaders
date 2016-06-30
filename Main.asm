@@ -8,8 +8,8 @@
 .equ SLICE_POINT_2 10
 .equ SLICE_POINT_3 13
 
-.equ META_TABLE_SIZE (BattleRasterEffectMetaTableEnd-BattleRasterEffectMetaTable)/2
-
+.equ META_TABLE_MAX_INDEX 1
+.equ ENEMY_MOVE_INTERVAL 75
 
 .bank 0 slot 0
 .org $0038
@@ -51,7 +51,7 @@
     ld a,RASTER_INTERRUPT_VALUE
     call RasterEffect.Initialize
 
-    ld a,127
+    ld a,ENEMY_MOVE_INTERVAL
     call Timer.Setup
 
 
@@ -77,17 +77,17 @@
     call Timer.Countdown
     call Timer.IsDone
     jp nc,+
-      ld a,127
+      ld a,ENEMY_MOVE_INTERVAL
       call Timer.Setup
       call SetNextRasterEffectTable
     +:
 
   jp Main
 
-  SetNextRasterEffectTable:
-    ld a,(MetaTableIndex)
+  SetNextRasterEffectTable: ; FIXME: Split this up, and get NextRaster..
+    ld a,(MetaTableIndex)   ; out in the open...
     inc a
-    cp 2
+    cp META_TABLE_MAX_INDEX+1
     jp nz,+
       xor a
     +:
