@@ -111,34 +111,36 @@
 
 .bank 2 slot 2
 ; -----------------------------------------------------------------------------
-  .section "Data" free
+.section "Battle Raster Effect Data" align 256
 ; -----------------------------------------------------------------------------
-.equ ALIGN_SLICES 1
-.equ SKEW_SLICES 0
-.macro MakeRasterEffectTable ARGS OFFSET, SLICE_MODE
-  .if SLICE_MODE == SKEW_SLICES
-    .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), OFFSET+8
-    .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1), OFFSET-8
-    .db ((ONE_ROW*SLICE_POINT_3)+SLICE_POINT_3-1), 0
-  .else
-    .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), OFFSET
-    .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1), OFFSET
-    .db ((ONE_ROW*SLICE_POINT_3)+SLICE_POINT_3-1), 0
-  .endif
-.endm
+  .equ ALIGN_SLICES 1
+  .equ SKEW_SLICES 0
+  .macro MakeRasterEffectTable ARGS OFFSET, SLICE_MODE
+    .if SLICE_MODE == SKEW_SLICES
+      .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), OFFSET+8
+      .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1), OFFSET-8
+      .db ((ONE_ROW*SLICE_POINT_3)+SLICE_POINT_3-1), 0
+    .else
+      .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), OFFSET
+      .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1), OFFSET
+      .db ((ONE_ROW*SLICE_POINT_3)+SLICE_POINT_3-1), 0
+    .endif
+  .endm
+
+  BattleRasterEffectMetaTable:
+    .dw BattleRasterEffectTable1, BattleRasterEffectTable2
+  BattleRasterEffectMetaTableEnd:
 
   BattleRasterEffectTable1:
     MakeRasterEffectTable 0, ALIGN_SLICES
   BattleRasterEffectTable2:
     MakeRasterEffectTable 0, SKEW_SLICES
+.ends
 
+; -----------------------------------------------------------------------------
+.section "Mockup Assets" free
+; -----------------------------------------------------------------------------
   MockupAssets:
     .include "MockupAssets.inc"
   MockupAssetsEnd:
-  .ends
-
-.section "Meta table" align 256
-  BattleRasterEffectMetaTable:
-    .dw BattleRasterEffectTable1, BattleRasterEffectTable2
-  BattleRasterEffectMetaTableEnd:
 .ends

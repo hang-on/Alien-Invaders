@@ -2,9 +2,9 @@
 ; wla symbolic information for "Binaries\Alien-Invaders.sms".
 
 [labels]
-0000:c004 VDPStatus
-0000:c005 PauseFlag
-0000:c006 InputPorts
+0000:c000 VDPStatus
+0000:c001 PauseFlag
+0000:c002 InputPorts
 0000:001d _MapperInitData
 0000:0146 AwaitFrameInterrupt
 0000:0021 ClearRam
@@ -23,18 +23,18 @@
 0000:0156 Timer.Countdown
 0000:015b Timer.Setup
 0000:015f Timer.IsDone
-0000:c000 Timer
-0000:c001 NextRasterEffectTable
-0000:c003 MetaTableIndex
+0000:c004 Timer
+0000:c005 NextRasterEffectTable
+0000:c007 MetaTableIndex
 0000:0071 SetupMain
 0000:00b5 Main
 0000:00d2 SetNextRasterEffectTable
-0002:8000 BattleRasterEffectTable1
-0002:8006 BattleRasterEffectTable2
-0002:800c MockupAssets
-0002:800c MockupPalette
-0002:801c MockupTilemap
-0002:861c MockupTiles
-0002:909c MockupAssetsEnd
 0002:9100 BattleRasterEffectMetaTable
 0002:9104 BattleRasterEffectMetaTableEnd
+0002:9104 BattleRasterEffectTable1
+0002:910a BattleRasterEffectTable2
+0002:8000 MockupAssets
+0002:8000 MockupPalette
+0002:8010 MockupTilemap
+0002:8610 MockupTiles
+0002:9090 MockupAssetsEnd
