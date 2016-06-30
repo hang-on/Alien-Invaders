@@ -55,6 +55,10 @@
     ld a,127
     ld (Timer),a
 
+    ld a,127
+    call Timer.Setup
+
+
 
     ld a,FULL_SCROLL_SHOW_LEFT_COLUMN_KEEP_SPRITES_ENABLE_RASTER_INT
     ld b,0
@@ -73,6 +77,8 @@
     call RasterEffect.BeginNewFrame
 
     ; Non-vblank stuff below this line...
+
+
 
     ld a,(Timer)
     dec a
@@ -100,6 +106,13 @@
     ld a,127
     ld (Timer),a
     ++:
+
+    call Timer.Countdown
+    call Timer.IsDone
+    jp nc,+
+
+    +:
+
   jp Main
 .ends
 
