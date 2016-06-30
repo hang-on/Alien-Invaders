@@ -30,9 +30,8 @@
 0000:00b5 Main
 0000:00d2 SetNextRasterEffectTable
 0002:9100 BattleRasterEffectMetaTable
-0002:9104 BattleRasterEffectMetaTableEnd
-0002:9104 BattleRasterEffectTable1
-0002:910a BattleRasterEffectTable2
+0002:9106 BattleRasterEffectTable1
+0002:910c BattleRasterEffectTable2
 0002:8000 MockupAssets
 0002:8000 MockupPalette
 0002:8010 MockupTilemap

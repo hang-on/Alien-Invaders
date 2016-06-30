@@ -11,6 +11,8 @@
 .equ META_TABLE_MAX_INDEX 1
 .equ ENEMY_MOVE_INTERVAL 75
 
+.equ END_OF_TABLE $ffff
+
 .bank 0 slot 0
 .org $0038
 ; ---------------------------------------------------------------------------
@@ -128,8 +130,7 @@
   .endm
 
   BattleRasterEffectMetaTable:
-    .dw BattleRasterEffectTable1, BattleRasterEffectTable2
-  BattleRasterEffectMetaTableEnd:
+    .dw BattleRasterEffectTable1, BattleRasterEffectTable2, END_OF_TABLE
 
   BattleRasterEffectTable1:
     MakeRasterEffectTable 0, ALIGN_SLICES
