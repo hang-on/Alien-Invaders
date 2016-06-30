@@ -35,7 +35,6 @@
 
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Main variables" slot 3
-  Timer db
   NextRasterEffectTable dw
   MetaTableIndex db
 .ends
