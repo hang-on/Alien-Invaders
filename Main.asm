@@ -90,8 +90,14 @@
 
   SetNextRasterEffectTable: ; FIXME: Split this up, and free NextRaster..
 
-    ; ------ Update MetaTableIndex
-    ; Get MetaTableIndex and increment it
+    ld a,(MetaTableIndex)
+    ld hl,BattleRasterEffectMetaTable
+    call GetWordFromTable
+
+    ; Update variable
+    ld (NextRasterEffectTable),hl
+
+    ; increment or reset MetaTableIndex
     ld a,(MetaTableIndex)
     inc a
     ; See if index overflows-
@@ -103,22 +109,22 @@
     ; Save updated MetaTableIndex
     ld (MetaTableIndex),a
 
-    ; Use the index to point HL to word-sized table element
-    add a,a
-    ld hl,BattleRasterEffectMetaTable
-    ld d,0
-    ld e,a
-    add hl,de
 
-    ; Read the word into DE
-    ld e,(hl)
-    inc hl
-    ld d,(hl)
-
-    ; Update variable
-    ld (NextRasterEffectTable),de
     ret
 
+    GetWordFromTable:
+      ; Return in HL the word-sized (LSB) element at [index] from a table.
+      ; Entry: A = index, HL = Base address of table
+      ; Exit: HL = Word at position [index] in [table].
+      add a,a
+      ld d,0
+      ld e,a
+      add hl,de
+      ld e,(hl)
+      inc hl
+      ld d,(hl)
+      ex de,hl
+    ret
 .ends
 
 
