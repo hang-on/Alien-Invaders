@@ -43,14 +43,14 @@
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Battle loop variables" slot 3
   CurrentRasterEffectPtr dw
-  BattleRasterEffectMetaTableIndex db
+  RasterEffectMetaTableIndex db
 .ends
 ; -----------------------------------------------------------------------------
 .section "Battle Loop" free
 ; -----------------------------------------------------------------------------
   SetupBattleLoop:
     ; Initialize variables:
-    GetNextWord BattleRasterEffectMetaTableIndex, BattleRasterEffectMetaTable, BattleRasterEffectMetaTableEnd
+    GetNextWord RasterEffectMetaTableIndex, BattleRasterEffectMetaTable, BattleRasterEffectMetaTableEnd
     ld (CurrentRasterEffectPtr),hl
 
     ld a,RASTER_INTERRUPT_VALUE
@@ -86,7 +86,7 @@
     jp nc,SkipEnemyMovement
       ld a,ENEMY_MOVE_INTERVAL
       call Timer.Setup
-      GetNextWord BattleRasterEffectMetaTableIndex, BattleRasterEffectMetaTable, BattleRasterEffectMetaTableEnd
+      GetNextWord RasterEffectMetaTableIndex, BattleRasterEffectMetaTable, BattleRasterEffectMetaTableEnd
       ld (CurrentRasterEffectPtr),hl
     SkipEnemyMovement:
 
@@ -115,9 +115,9 @@
   .endm
 
   BattleRasterEffectTable1:
-    MakeRasterEffectTable 0, ALIGN_SLICES
+    MakeRasterEffectTable -4, ALIGN_SLICES
   BattleRasterEffectTable2:
-    MakeRasterEffectTable 0, SKEW_SLICES
+    MakeRasterEffectTable -4, SKEW_SLICES
 
   BattleRasterEffectMetaTable:
     ; A table of pointers to Battle Raster Effects which create the illusion
