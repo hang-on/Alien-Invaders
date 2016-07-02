@@ -90,7 +90,7 @@
 
   SetNextRasterEffectTable: ; FIXME: Split this up, and free NextRaster..
 
-    ; ------ Update MetaTableIndex & Posibly MetaTablePointer !! FIX !!
+    ; ------ Update MetaTableIndex
     ; Get MetaTableIndex and increment it
     ld a,(MetaTableIndex)
     inc a
@@ -99,32 +99,25 @@
     jp nz,+
       ; If index overflows, then...
       xor a ; reset index
-      ld hl,BattleRasterEffectMetaTable
-      ld (MetaTablePointer),hl ; reset MetaTablePointer
     +:
     ; Save updated MetaTableIndex
     ld (MetaTableIndex),a
 
-    ld hl,(MetaTablePointer)
+    ; Use the index to point HL to word-sized table element
+    add a,a
+    ld hl,BattleRasterEffectMetaTable
+    ld d,0
+    ld e,a
+    add hl,de
+
+    ; Read the word into DE
     ld e,(hl)
     inc hl
     ld d,(hl)
-    inc hl
-    ld (MetaTablePointer),hl
+
+    ; Update variable
     ld (NextRasterEffectTable),de
     ret
-
-    add a,a
-    ld h,0
-    ld l,a
-    ld de,BattleRasterEffectMetaTable
-    add hl,de
-    ld a,(hl)
-    inc hl
-    ld h,(hl)
-    ld l,a
-    ld (NextRasterEffectTable),hl
-  ret
 
 .ends
 
