@@ -1,7 +1,7 @@
 ; Invaderlib.inc
 
 ; -----------------------------------------------------------------------------
-.macro GetNextWord ARGS _INDEX, _NUMBER_OF_ELEMENTS, _TABLE,
+.macro GetNextWord ARGS _INDEX, _TABLE, _TABLE_END
 ; -----------------------------------------------------------------------------
   ; The purpose of this macro is to facilitate the common process of
   ; retrieving a word-sized element from a table at a given index. The macro
@@ -27,7 +27,7 @@
   ; Increment or reset index before saving.
   ld a,(_INDEX)
   inc a
-  cp _NUMBER_OF_ELEMENTS
+  cp (_TABLE_END-_TABLE)/2
   jp nz,+
     xor a
   +:

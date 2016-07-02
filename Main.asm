@@ -80,7 +80,7 @@
     jp nc,SkipEnemyMovement
       ld a,ENEMY_MOVE_INTERVAL
       call Timer.Setup
-      GetNextWord MetaTableIndex, META_TABLE_NUMBER_OF_ELEMENTS, BattleRasterEffectMetaTable
+      GetNextWord MetaTableIndex, BattleRasterEffectMetaTable, BattleRasterEffectMetaTableEnd
       ld (NextRasterEffectTable),hl
     SkipEnemyMovement:
 
@@ -108,7 +108,8 @@
   .endm
 
   BattleRasterEffectMetaTable:
-    .dw BattleRasterEffectTable2, BattleRasterEffectTable1, END_OF_TABLE
+    .dw BattleRasterEffectTable2, BattleRasterEffectTable1,
+  BattleRasterEffectMetaTableEnd:
 
   BattleRasterEffectTable1:
     MakeRasterEffectTable 0, ALIGN_SLICES
