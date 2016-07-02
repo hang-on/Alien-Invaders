@@ -7,8 +7,8 @@
   ; retrieving a word-sized element from a table at a given index. The macro
   ; then updates the index so it refers to the next element.
   ; Entry: _INDEX is an 8-bit variable holding the index of the table.
-  ;        _NUMBER_OF_ELEMENTS is the number elements in the table.
   ;        _TABLE is the base address of the table.
+  ;        _TABLE_END is the end-of-tale, used to calculate overflow.
   ; Exit:  The variable passed as _INDEX is incremented or reset.
   ;        HL = Word at position [index] in [table].
 
