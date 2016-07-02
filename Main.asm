@@ -80,29 +80,14 @@
 
     call Timer.Countdown
     call Timer.IsDone
-    jp nc,badlabel ; FIXME: Bad label!
+    jp nc,SkipEnemyMovement
       ld a,ENEMY_MOVE_INTERVAL
       call Timer.Setup
-      ;call SetNextRasterEffectTable
       GetNextWord MetaTableIndex, META_TABLE_MAX_INDEX, BattleRasterEffectMetaTable
       ld (NextRasterEffectTable),hl
-    badlabel:
+    SkipEnemyMovement:
 
   jp Main
-
-  SetNextRasterEffectTable: ; FIXME: Split this up, and free NextRaster..
-
-    ld a,(MetaTableIndex)
-    ld hl,BattleRasterEffectMetaTable
-    call GetWordFromTable
-
-    ; Update variable
-    ld (NextRasterEffectTable),hl
-
-    UpdateIndex MetaTableIndex, META_TABLE_MAX_INDEX
-
-
-    ret
 .ends
 .bank 1 slot 1
 
