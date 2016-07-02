@@ -114,14 +114,17 @@
     .endif
   .endm
 
-  BattleRasterEffectMetaTable:
-    .dw BattleRasterEffectTable1, BattleRasterEffectTable2,
-  BattleRasterEffectMetaTableEnd:
-
   BattleRasterEffectTable1:
     MakeRasterEffectTable 0, ALIGN_SLICES
   BattleRasterEffectTable2:
     MakeRasterEffectTable 0, SKEW_SLICES
+
+  BattleRasterEffectMetaTable:
+    ; A table of pointers to Battle Raster Effects which create the illusion
+    ; of a moving alien army.
+    .dw BattleRasterEffectTable1, BattleRasterEffectTable2,
+  BattleRasterEffectMetaTableEnd:
+
 .ends
 
 ; -----------------------------------------------------------------------------
