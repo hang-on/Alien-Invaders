@@ -1,6 +1,5 @@
 ; Invaderlib.inc
 
-
 ; -----------------------------------------------------------------------------
 .macro LoadImage
 ; -----------------------------------------------------------------------------
@@ -109,3 +108,38 @@
   ret
 
 .ends
+
+; -----------------------------------------------------------------------------
+.section "Misc Functions" free
+; -----------------------------------------------------------------------------
+  GetWordFromTable:
+    ; Return in HL the word-sized (LSB) element at [index] from a table.
+    ; Entry: A = index, HL = Base address of table
+    ; Exit: HL = Word at position [index] in [table].
+    add a,a
+    ld d,0
+    ld e,a
+    add hl,de
+    ld e,(hl)
+    inc hl
+    ld d,(hl)
+    ex de,hl
+  ret
+.ends
+
+.macro UpdateIndex
+  ; increment or reset MetaTableIndex
+  ld a,(\1)
+  inc a
+  ; See if index overflows-
+  cp (\2)+1
+  jp nz,+
+    ; If index overflows, then...
+    xor a ; reset index
+  +:
+  ; Save updated MetaTableIndex
+  ld (\1),a
+.endm
+
+.macro GetNextWord
+.endm
