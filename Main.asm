@@ -43,7 +43,8 @@
 
     LoadImage MockupAssets,MockupAssetsEnd
 
-    ld hl,BattleRasterEffectTable1
+    ; Initialize variables:
+    GetNextWord MetaTableIndex, BattleRasterEffectMetaTable, BattleRasterEffectMetaTableEnd
     ld (NextRasterEffectTable),hl
 
     ld a,RASTER_INTERRUPT_VALUE
@@ -105,7 +106,7 @@
   .endm
 
   BattleRasterEffectMetaTable:
-    .dw BattleRasterEffectTable2, BattleRasterEffectTable1,
+    .dw BattleRasterEffectTable1, BattleRasterEffectTable2,
   BattleRasterEffectMetaTableEnd:
 
   BattleRasterEffectTable1:
