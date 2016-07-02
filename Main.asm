@@ -88,14 +88,32 @@
 
   jp Main
 
-  SetNextRasterEffectTable: ; FIXME: Split this up, and get NextRaster..
-    ld a,(MetaTableIndex)   ; out in the open...
+  SetNextRasterEffectTable: ; FIXME: Split this up, and free NextRaster..
+
+    ; ------ Update MetaTableIndex & Posibly MetaTablePointer !! FIX !!
+    ; Get MetaTableIndex and increment it
+    ld a,(MetaTableIndex)
     inc a
+    ; See if index overflows-
     cp META_TABLE_MAX_INDEX+1
     jp nz,+
-      xor a
+      ; If index overflows, then...
+      xor a ; reset index
+      ld hl,BattleRasterEffectMetaTable
+      ld (MetaTablePointer),hl ; reset MetaTablePointer
     +:
+    ; Save updated MetaTableIndex
     ld (MetaTableIndex),a
+
+    ld hl,(MetaTablePointer)
+    ld e,(hl)
+    inc hl
+    ld d,(hl)
+    inc hl
+    ld (MetaTablePointer),hl
+    ld (NextRasterEffectTable),de
+    ret
+
     add a,a
     ld h,0
     ld l,a
@@ -133,7 +151,7 @@
   .endm
 
   BattleRasterEffectMetaTable:
-    .dw BattleRasterEffectTable1, BattleRasterEffectTable2, END_OF_TABLE
+    .dw BattleRasterEffectTable2, BattleRasterEffectTable1, END_OF_TABLE
 
   BattleRasterEffectTable1:
     MakeRasterEffectTable 0, ALIGN_SLICES
