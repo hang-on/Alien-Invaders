@@ -1,6 +1,40 @@
 ; Invaderlib.inc
 
 ; -----------------------------------------------------------------------------
+.macro GetNextWord ARGS _INDEX, _NUMBER_OF_ELEMENTS, _TABLE,
+; -----------------------------------------------------------------------------
+  ; The purpose of this macro is to facilitate the common process of
+  ; retrieving a word-sized element from a table at a given index.
+  ; Entry: _INDEX is an 8-bit variable holding the index of the table.
+  ;        _MAX_INDEX is the max index
+  ; Return in HL the word-sized (LSB) element at [index] from a table.
+  ; Exit: HL = Word at position [index] in [table].
+
+  ld a,(_INDEX)
+  ld hl,_TABLE
+  add a,a
+  ld d,0
+  ld e,a
+  add hl,de
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  ex de,hl
+
+  ; increment or reset MetaTableIndex
+  ld a,(_INDEX)
+  inc a
+  ; See if index overflows-
+  cp _NUMBER_OF_ELEMENTS
+  jp nz,+
+    ; If index overflows, then...
+    xor a ; reset index
+  +:
+  ; Save updated MetaTableIndex
+  ld (_INDEX),a
+.endm
+
+; -----------------------------------------------------------------------------
 .macro LoadImage
 ; -----------------------------------------------------------------------------
   ; This macro makes it easy to load an image. Call the macro like this:
@@ -108,63 +142,3 @@
   ret
 
 .ends
-
-; -----------------------------------------------------------------------------
-.section "Misc Functions" free
-; -----------------------------------------------------------------------------
-  GetWordFromTable:
-    ; Return in HL the word-sized (LSB) element at [index] from a table.
-    ; Entry: A = index, HL = Base address of table
-    ; Exit: HL = Word at position [index] in [table].
-    add a,a
-    ld d,0
-    ld e,a
-    add hl,de
-    ld e,(hl)
-    inc hl
-    ld d,(hl)
-    ex de,hl
-  ret
-.ends
-
-.macro UpdateIndex
-  ; increment or reset MetaTableIndex
-  ld a,(\1)
-  inc a
-  ; See if index overflows-
-  cp (\2)+1
-  jp nz,+
-    ; If index overflows, then...
-    xor a ; reset index
-  +:
-  ; Save updated MetaTableIndex
-  ld (\1),a
-.endm
-
-.macro GetNextWord ARGS INDEX, MAX_INDEX, TABLE,
-  ; Get word in HL, and forward or reset table index
-
-  ld a,(INDEX)
-  ld hl,TABLE
-  add a,a
-  ld d,0
-  ld e,a
-  add hl,de
-  ld e,(hl)
-  inc hl
-  ld d,(hl)
-  ex de,hl
-
-  ; increment or reset MetaTableIndex
-  ld a,(INDEX)
-  inc a
-  ; See if index overflows-
-  cp (MAX_INDEX)+1
-  jp nz,+
-    ; If index overflows, then...
-    xor a ; reset index
-  +:
-  ; Save updated MetaTableIndex
-  ld (INDEX),a
-
-.endm

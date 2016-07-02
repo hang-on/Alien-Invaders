@@ -8,7 +8,7 @@
 .equ SLICE_POINT_2 10
 .equ SLICE_POINT_3 13
 
-.equ META_TABLE_MAX_INDEX 1
+.equ META_TABLE_NUMBER_OF_ELEMENTS 2
 .equ ENEMY_MOVE_INTERVAL 75
 
 .equ END_OF_TABLE $ffff
@@ -83,7 +83,7 @@
     jp nc,SkipEnemyMovement
       ld a,ENEMY_MOVE_INTERVAL
       call Timer.Setup
-      GetNextWord MetaTableIndex, META_TABLE_MAX_INDEX, BattleRasterEffectMetaTable
+      GetNextWord MetaTableIndex, META_TABLE_NUMBER_OF_ELEMENTS, BattleRasterEffectMetaTable
       ld (NextRasterEffectTable),hl
     SkipEnemyMovement:
 
