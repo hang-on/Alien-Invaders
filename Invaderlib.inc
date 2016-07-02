@@ -141,5 +141,30 @@
   ld (\1),a
 .endm
 
-.macro GetNextWord
+.macro GetNextWord ARGS INDEX, MAX_INDEX, TABLE,
+  ; Get word in HL, and forward or reset table index
+
+  ld a,(INDEX)
+  ld hl,TABLE
+  add a,a
+  ld d,0
+  ld e,a
+  add hl,de
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  ex de,hl
+
+  ; increment or reset MetaTableIndex
+  ld a,(INDEX)
+  inc a
+  ; See if index overflows-
+  cp (MAX_INDEX)+1
+  jp nz,+
+    ; If index overflows, then...
+    xor a ; reset index
+  +:
+  ; Save updated MetaTableIndex
+  ld (INDEX),a
+
 .endm

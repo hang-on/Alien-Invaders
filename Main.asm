@@ -80,11 +80,13 @@
 
     call Timer.Countdown
     call Timer.IsDone
-    jp nc,+++
+    jp nc,badlabel ; FIXME: Bad label!
       ld a,ENEMY_MOVE_INTERVAL
       call Timer.Setup
-      call SetNextRasterEffectTable
-    +++:
+      ;call SetNextRasterEffectTable
+      GetNextWord MetaTableIndex, META_TABLE_MAX_INDEX, BattleRasterEffectMetaTable
+      ld (NextRasterEffectTable),hl
+    badlabel:
 
   jp Main
 
