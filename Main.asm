@@ -37,7 +37,6 @@
 .ramsection "Main variables" slot 3
   NextRasterEffectTable dw
   MetaTableIndex db
-  MetaTablePointer dw
 .ends
 .bank 0 slot 0
 ; -----------------------------------------------------------------------------
@@ -49,8 +48,6 @@
 
     ld hl,BattleRasterEffectTable1
     ld (NextRasterEffectTable),hl
-    ld hl,BattleRasterEffectMetaTable
-    ld (MetaTablePointer),hl
 
     ld a,RASTER_INTERRUPT_VALUE
     call RasterEffect.Initialize

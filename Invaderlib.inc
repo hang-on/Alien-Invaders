@@ -4,12 +4,15 @@
 .macro GetNextWord ARGS _INDEX, _NUMBER_OF_ELEMENTS, _TABLE,
 ; -----------------------------------------------------------------------------
   ; The purpose of this macro is to facilitate the common process of
-  ; retrieving a word-sized element from a table at a given index.
+  ; retrieving a word-sized element from a table at a given index. The macro
+  ; then updates the index so it refers to the next element.
   ; Entry: _INDEX is an 8-bit variable holding the index of the table.
-  ;        _MAX_INDEX is the max index
-  ; Return in HL the word-sized (LSB) element at [index] from a table.
-  ; Exit: HL = Word at position [index] in [table].
+  ;        _NUMBER_OF_ELEMENTS is the number elements in the table.
+  ;        _TABLE is the base address of the table.
+  ; Exit:  The variable passed as _INDEX is incremented or reset.
+  ;        HL = Word at position [index] in [table].
 
+  ; Retrieve word at table[index] and store it in HL.
   ld a,(_INDEX)
   ld hl,_TABLE
   add a,a
@@ -21,16 +24,13 @@
   ld d,(hl)
   ex de,hl
 
-  ; increment or reset MetaTableIndex
+  ; Increment or reset index before saving.
   ld a,(_INDEX)
   inc a
-  ; See if index overflows-
   cp _NUMBER_OF_ELEMENTS
   jp nz,+
-    ; If index overflows, then...
-    xor a ; reset index
+    xor a
   +:
-  ; Save updated MetaTableIndex
   ld (_INDEX),a
 .endm
 
