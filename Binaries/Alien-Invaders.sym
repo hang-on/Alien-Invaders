@@ -24,7 +24,7 @@
 0000:0173 Timer.Setup
 0000:0177 Timer.IsDone
 0000:c004 NextRasterEffectTable
-0000:c006 MetaTableIndex
+0000:c006 BattleRasterEffectMetaTableIndex
 0000:0071 SetupMain
 0000:00ce Main
 0000:0104 SkipEnemyMovement

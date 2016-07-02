@@ -33,7 +33,7 @@
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Main variables" slot 3
   NextRasterEffectTable dw
-  MetaTableIndex db
+  BattleRasterEffectMetaTableIndex db
 .ends
 .bank 0 slot 0
 ; -----------------------------------------------------------------------------
@@ -44,7 +44,7 @@
     LoadImage MockupAssets,MockupAssetsEnd
 
     ; Initialize variables:
-    GetNextWord MetaTableIndex, BattleRasterEffectMetaTable, BattleRasterEffectMetaTableEnd
+    GetNextWord BattleRasterEffectMetaTableIndex, BattleRasterEffectMetaTable, BattleRasterEffectMetaTableEnd
     ld (NextRasterEffectTable),hl
 
     ld a,RASTER_INTERRUPT_VALUE
@@ -78,7 +78,7 @@
     jp nc,SkipEnemyMovement
       ld a,ENEMY_MOVE_INTERVAL
       call Timer.Setup
-      GetNextWord MetaTableIndex, BattleRasterEffectMetaTable, BattleRasterEffectMetaTableEnd
+      GetNextWord BattleRasterEffectMetaTableIndex, BattleRasterEffectMetaTable, BattleRasterEffectMetaTableEnd
       ld (NextRasterEffectTable),hl
     SkipEnemyMovement:
 
