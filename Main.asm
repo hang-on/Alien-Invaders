@@ -8,10 +8,7 @@
 .equ SLICE_POINT_2 10
 .equ SLICE_POINT_3 13
 
-.equ META_TABLE_NUMBER_OF_ELEMENTS 2
 .equ ENEMY_MOVE_INTERVAL 75
-
-.equ END_OF_TABLE $ffff
 
 .bank 0 slot 0
 .org $0038
