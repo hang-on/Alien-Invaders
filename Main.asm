@@ -8,7 +8,7 @@
 .equ SLICE_POINT_2 10
 .equ SLICE_POINT_3 13
 
-.equ ENEMY_MOVE_INTERVAL 75
+.equ ENEMY_MOVE_INTERVAL 75           ; How many frames between each move?
 
 .bank 0 slot 0
 .org $0038
@@ -27,25 +27,31 @@
   pop af
   ei
   reti
-
 .ends
 
-; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-.ramsection "Main variables" slot 3
-  NextRasterEffectTable dw
-  BattleRasterEffectMetaTableIndex db
-.ends
 .bank 0 slot 0
 ; -----------------------------------------------------------------------------
 .section "Main" free
 ; -----------------------------------------------------------------------------
   SetupMain:
+    jp Main
 
-    LoadImage MockupAssets,MockupAssetsEnd
+  Main:
+    jp SetupBattleLoop
+.ends
 
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+.ramsection "Battle loop variables" slot 3
+  CurrentRasterEffectPtr dw
+  BattleRasterEffectMetaTableIndex db
+.ends
+; -----------------------------------------------------------------------------
+.section "Battle Loop" free
+; -----------------------------------------------------------------------------
+  SetupBattleLoop:
     ; Initialize variables:
     GetNextWord BattleRasterEffectMetaTableIndex, BattleRasterEffectMetaTable, BattleRasterEffectMetaTableEnd
-    ld (NextRasterEffectTable),hl
+    ld (CurrentRasterEffectPtr),hl
 
     ld a,RASTER_INTERRUPT_VALUE
     call RasterEffect.Initialize
@@ -53,7 +59,8 @@
     ld a,ENEMY_MOVE_INTERVAL
     call Timer.Setup
 
-
+    ; Initialize vdp (assume blanked screen and interrupts off):
+    LoadImage MockupAssets,MockupAssetsEnd
 
     ld a,FULL_SCROLL_SHOW_LEFT_COLUMN_KEEP_SPRITES_ENABLE_RASTER_INT
     ld b,0
@@ -64,11 +71,12 @@
     call SetRegister
     ei
     call AwaitFrameInterrupt
+    jp BattleLoop
 
-  Main:
+  BattleLoop:
     call AwaitFrameInterrupt
 
-    ld hl,(NextRasterEffectTable)
+    ld hl,(CurrentRasterEffectPtr)
     call RasterEffect.BeginNewFrame
 
     ; Non-vblank stuff below this line...
@@ -79,13 +87,14 @@
       ld a,ENEMY_MOVE_INTERVAL
       call Timer.Setup
       GetNextWord BattleRasterEffectMetaTableIndex, BattleRasterEffectMetaTable, BattleRasterEffectMetaTableEnd
-      ld (NextRasterEffectTable),hl
+      ld (CurrentRasterEffectPtr),hl
     SkipEnemyMovement:
 
-  jp Main
+  jp BattleLoop
 .ends
-.bank 1 slot 1
 
+.bank 1 slot 1
+  ; Stuff in bank 1 goes here...
 
 .bank 2 slot 2
 ; -----------------------------------------------------------------------------
