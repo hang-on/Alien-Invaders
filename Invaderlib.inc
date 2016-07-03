@@ -1,11 +1,18 @@
 ; Invaderlib.inc
 
-.macro Compare ARGS _VARIABLE, _VALUE
-  or a
+.macro WordMatch ARGS _VARIABLE, _VALUE
+  or a              ; Clear carry so it does not interfere with sbc below.
   ld hl,_VARIABLE
+  ld a,(hl)
+  inc hl
+  ld h,(hl)
+  ld l,a
   ld de,_VALUE
   sbc hl,de
-  
+  scf
+  jp z,+
+    or a
+  +:
 .endm
 
 ; -----------------------------------------------------------------------------
