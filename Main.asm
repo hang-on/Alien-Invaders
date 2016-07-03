@@ -54,7 +54,7 @@
     GetNextWord RasterEffectMetaTableIndex, BattleRasterEffectMetaTable, BattleRasterEffectMetaTableEnd
     ld (CurrentRasterEffectPtr),hl
 
-    ld hl,$ffff
+    ld hl,BattleRasterEffectTable1
     ld (MyPointer),hl
 
     ld a,RASTER_INTERRUPT_VALUE
@@ -92,8 +92,14 @@
       call Timer.Setup
       GetNextWord RasterEffectMetaTableIndex, BattleRasterEffectMetaTable, BattleRasterEffectMetaTableEnd
       ld (CurrentRasterEffectPtr),hl
-      WordMatch MyPointer, $ffff
-      jp c,MyLabel
+      ld hl, MyPointer
+      inc (hl)
+      inc (hl)
+      WordMatch MyPointer, BattleRasterEffectTable6
+      jp nc,+
+        ld hl,BattleRasterEffectTable1
+        ld (MyPointer),hl
+      +:
 
     SkipEnemyMovement:
 
