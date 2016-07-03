@@ -51,11 +51,11 @@
 ; -----------------------------------------------------------------------------
   SetupBattleLoop:
     ; Initialize variables:
-    GetNextWord RasterEffectMetaTableIndex, BattleRasterEffectMetaTable, BattleRasterEffectMetaTableEnd
-    ld (CurrentRasterEffectPtr),hl
+    ;GetNextWord RasterEffectMetaTableIndex, BattleRasterEffectMetaTable, BattleRasterEffectMetaTableEnd
 
     ld hl,BattleRasterEffectTable1
     ld (MyPointer),hl
+    ld (CurrentRasterEffectPtr),hl
 
     ld a,RASTER_INTERRUPT_VALUE
     call RasterEffect.Initialize
@@ -88,17 +88,22 @@
     call Timer.Countdown
     call Timer.IsDone
     jp nc,SkipEnemyMovement
+      ;debug:
       ld a,ENEMY_MOVE_INTERVAL
       call Timer.Setup
-      GetNextWord RasterEffectMetaTableIndex, BattleRasterEffectMetaTable, BattleRasterEffectMetaTableEnd
-      ld (CurrentRasterEffectPtr),hl
+      ;GetNextWord RasterEffectMetaTableIndex, BattleRasterEffectMetaTable, BattleRasterEffectMetaTableEnd
+      ld hl,CurrentRasterEffectPtr
+      .rept 6
+        inc (hl)
+      .endr
+      ;ld (CurrentRasterEffectPtr),hl
       ld hl, MyPointer
       inc (hl)
       inc (hl)
       WordMatch MyPointer, BattleRasterEffectTable6
       jp nc,+
         ld hl,BattleRasterEffectTable1
-        ld (MyPointer),hl
+        ld (CurrentRasterEffectPtr),hl
       +:
 
     SkipEnemyMovement:
