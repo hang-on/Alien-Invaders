@@ -98,7 +98,7 @@
 
 .bank 2 slot 2
 ; -----------------------------------------------------------------------------
-.section "Battle Raster Effect Data" align 256
+.section "Battle Raster Effect Data" free
 ; -----------------------------------------------------------------------------
   .equ ALIGN_SLICES 1
   .equ SKEW_SLICES 0

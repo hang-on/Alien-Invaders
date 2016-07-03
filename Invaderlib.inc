@@ -6,6 +6,7 @@
   ; The purpose of this macro is to facilitate the common process of
   ; retrieving a word-sized element from a table at a given index. The macro
   ; then updates the index so it refers to the next element.
+  ; NOTE: Index can be 126 at max!
   ; Entry: _INDEX is an 8-bit variable holding the index of the table.
   ;        _TABLE is the base address of the table.
   ;        _TABLE_END is the end-of-tale, used to calculate overflow.
