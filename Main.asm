@@ -8,7 +8,7 @@
 .equ SLICE_POINT_2 10
 .equ SLICE_POINT_3 13
 
-.equ ENEMY_MOVE_INTERVAL 75           ; How many frames between each move?
+.equ ENEMY_MOVE_INTERVAL 45           ; How many frames between each move?
 
 .bank 0 slot 0
 .org $0038
