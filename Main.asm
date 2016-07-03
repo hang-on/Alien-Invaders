@@ -44,6 +44,7 @@
 .ramsection "Battle loop variables" slot 3
   CurrentRasterEffectPtr dw
   RasterEffectMetaTableIndex db
+  MyPointer dw
 .ends
 ; -----------------------------------------------------------------------------
 .section "Battle Loop" free
@@ -52,6 +53,9 @@
     ; Initialize variables:
     GetNextWord RasterEffectMetaTableIndex, BattleRasterEffectMetaTable, BattleRasterEffectMetaTableEnd
     ld (CurrentRasterEffectPtr),hl
+
+    ld hl,$fffe
+    ld (MyPointer),hl
 
     ld a,RASTER_INTERRUPT_VALUE
     call RasterEffect.Initialize
@@ -88,6 +92,21 @@
       call Timer.Setup
       GetNextWord RasterEffectMetaTableIndex, BattleRasterEffectMetaTable, BattleRasterEffectMetaTableEnd
       ld (CurrentRasterEffectPtr),hl
+
+      or a
+      ld hl,MyPointer
+      ld a,(hl)
+      inc hl
+      ld h,(hl)
+      ld l,a
+      ld de,$ffff
+      sbc hl,de
+      jp nz,+
+        -:
+          nop
+        jp -
+      +:
+
     SkipEnemyMovement:
 
   jp BattleLoop

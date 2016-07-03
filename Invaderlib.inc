@@ -1,5 +1,13 @@
 ; Invaderlib.inc
 
+.macro Compare ARGS _VARIABLE, _VALUE
+  or a
+  ld hl,_VARIABLE
+  ld de,_VALUE
+  sbc hl,de
+  
+.endm
+
 ; -----------------------------------------------------------------------------
 .macro GetNextWord ARGS _INDEX, _TABLE, _TABLE_END
 ; -----------------------------------------------------------------------------
