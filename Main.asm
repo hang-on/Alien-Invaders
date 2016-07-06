@@ -59,7 +59,7 @@
     ld (VDPStatus),a
     bit 7,a
     jp nz,+
-      call RasterEffect.HandleRasterInterrupt
+      call Raster.HandleInterrupt
     +:
   exx
   pop af
@@ -136,7 +136,7 @@
     ;
   jp Main
   ;
-  RasterEffect.HandleRasterInterrupt:
+  Raster.HandleInterrupt:
     ; This function assumes it is called from the interrupt handler. Check if
     ; the current line = next slice point, which is read from this frame's
     ; raster effect table. If we are at a slice point then slice the screen by
@@ -146,16 +146,16 @@
     in a,(V_COUNTER_PORT)
     ld b,a
     ld hl,(Raster.ActiveEffect)
-    ld a,(hl)
-    cp b
-    ret nz
-    inc hl
-    ld a,(hl)
-    ld b,HORIZONTAL_SCROLL_REGISTER
-    call SetRegister
-    inc hl
-    ld (Raster.ActiveEffect),hl
-  ret
+    ld a,(hl)                       ; Load A with next slice point value.
+    cp b                            ; Is the current line == next slice point?
+    ret nz                          ; If not, then just return.
+    inc hl                          ; Else, increment HL to point to scroll.
+    ld a,(hl)                       ; Load scroll value into A, and set the
+    ld b,HORIZONTAL_SCROLL_REGISTER ; horizontal scroll register to the given
+    call SetRegister                ; value.
+    inc hl                          ; Finish by incrementing the pointer and
+    ld (Raster.ActiveEffect),hl     ; loading it back into memory. Now it is
+  ret                               ; pointing at the next slicepoint...
 .ends
 ;
 .bank 1 slot 1
