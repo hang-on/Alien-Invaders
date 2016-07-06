@@ -25,7 +25,7 @@
 0000:c006 Raster.Timer
 0000:0071 SetupMain
 0000:00b8 Main
-0000:00f8 SkipEnemyMovement
+0000:00f8 SkipRasterPointerUpdate
 0002:9090 RasterTablesStart
 0002:9180 RasterTablesEnd
 0002:8000 MockupAssets

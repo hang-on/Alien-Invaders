@@ -109,23 +109,29 @@
     ;
     call Timer.Countdown
     call Timer.IsDone
-    jp nc,SkipEnemyMovement
+    jp nc,SkipRasterPointerUpdate
+      ; Time to update the raster effect pointer. First set the timer.
       ld a,RASTER_TIMER_INTERVAL
       ld (Raster.Timer),a
-      ld hl,Raster.Pointer  ; FIXME: Comment this up!
+      ; Load the current raster pointer into HL.
+      ld hl,Raster.Pointer
       ld a,(hl)
       inc hl
       ld h,(hl)
       ld l,a
+      ; Skip forward one raster effect table element.
       ld de,6
       add hl,de
+      ; Load the updated pointer from HL back into ram.
       ld (Raster.Pointer),hl
+      ; If we have now moved past the raster effects meta table, then reset
+      ; the pointer to the start of the meta table.
       MATCH_WORDS Raster.Pointer, RasterTablesEnd
       jp nc,+
         ld hl,RasterTablesStart
         ld (Raster.Pointer),hl
       +:
-    SkipEnemyMovement:
+    SkipRasterPointerUpdate:
     ;
   jp Main
 .ends
