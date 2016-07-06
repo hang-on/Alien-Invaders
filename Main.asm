@@ -71,7 +71,7 @@
 .ends
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Main variables" slot 3
-  Raster.Pointer dw
+  Raster.MetaTablePointer dw
   Raster.Timer db
 .ends
 .bank 0 slot 0
@@ -81,7 +81,7 @@
   SetupMain:
     ; Initialize the raster effect:
     ld hl,RasterMetaTable
-    ld (Raster.Pointer),hl
+    ld (Raster.MetaTablePointer),hl
     ld a,RASTER_INTERRUPT_VALUE
     call RasterEffect.Initialize
     ld a,RASTER_TIMER_INTERVAL
@@ -102,7 +102,7 @@
   Main:
     call AwaitFrameInterrupt
     ; This is first line of vblank. Time to update the vdp...
-    ld hl,(Raster.Pointer)
+    ld hl,(Raster.MetaTablePointer)
     call RasterEffect.BeginNewFrame
     ;
     ; Non-vblank stuff below this line...
@@ -116,7 +116,7 @@
       ld a,RASTER_TIMER_INTERVAL
       ld (Raster.Timer),a
       ; Load the current raster pointer into HL.
-      ld hl,Raster.Pointer
+      ld hl,Raster.MetaTablePointer
       ld a,(hl)
       inc hl
       ld h,(hl)
@@ -125,13 +125,13 @@
       ld de,6
       add hl,de
       ; Load the updated pointer from HL back into ram.
-      ld (Raster.Pointer),hl
+      ld (Raster.MetaTablePointer),hl
       ; If we have now moved past the raster effects meta table, then reset
       ; the pointer to the start of the meta table.
-      MATCH_WORDS Raster.Pointer, RasterMetaTableEnd
+      MATCH_WORDS Raster.MetaTablePointer, RasterMetaTableEnd
       jp nc,+
         ld hl,RasterMetaTable
-        ld (Raster.Pointer),hl
+        ld (Raster.MetaTablePointer),hl
       +:
     SkipRasterPointerUpdate:
     ;

@@ -3,18 +3,18 @@
 
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Raster Effect Variables" slot 3
-  RasterEffect.TablePointer dw
+  Raster.ActiveEffect dw
 .ends
 ; -----------------------------------------------------------------------------
 .section "Raster Effect Functions" free
 ; -----------------------------------------------------------------------------
   RasterEffect.BeginNewFrame:
-    ; Point RasterEffect.TablePointer to the base of the raster effect table
+    ; Point Raster.ActiveEffect to the base of the raster effect table
     ; to be used to make raster effects during this frame. Then reset the
     ; vdp's hscroll register. Assumes blanked display and no interrupts.
     ; Entry: HL = Base address of this frame's raster effect table.
     ; Uses: AF, B, HL
-    ld (RasterEffect.TablePointer),hl
+    ld (Raster.ActiveEffect),hl
     ld a,0
     ld b,HORIZONTAL_SCROLL_REGISTER
     call SetRegister
@@ -29,7 +29,7 @@
     ; Uses: AF, B, HL
     in a,(V_COUNTER_PORT)
     ld b,a
-    ld hl,(RasterEffect.TablePointer)
+    ld hl,(Raster.ActiveEffect)
     ld a,(hl)
     cp b
     ret nz
@@ -38,7 +38,7 @@
     ld b,HORIZONTAL_SCROLL_REGISTER
     call SetRegister
     inc hl
-    ld (RasterEffect.TablePointer),hl
+    ld (Raster.ActiveEffect),hl
   ret
 
   RasterEffect.Initialize:
