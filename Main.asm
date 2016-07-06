@@ -1,17 +1,14 @@
 .include "Base.inc"
 .include "Invaderlib.inc"
-
 ; Definitions for raster effects
 .equ ONE_ROW 7
 .equ RASTER_INTERRUPT_VALUE ONE_ROW
 .equ SLICE_POINT_1 5
 .equ SLICE_POINT_2 10
 .equ SLICE_POINT_3 13
-
-.equ ENEMY_MOVE_INTERVAL 45           ; How many frames between each move?
-
+.equ RASTER_TABLE_INTERVAL 45           ; How many frames between each move?
 ; -----------------------------------------------------------------------------
-.macro WordMatch ARGS _VARIABLE, _VALUE
+.macro MATCH_WORDS ARGS _VARIABLE, _VALUE
 ; -----------------------------------------------------------------------------
   or a              ; Clear carry so it does not interfere with sbc below.
   ld hl,_VARIABLE
@@ -26,41 +23,34 @@
     or a
   +:
 .endm
-
-
 ; -----------------------------------------------------------------------------
-.macro LoadImage
+.macro LOAD_IMAGE
 ; -----------------------------------------------------------------------------
   ; This macro makes it easy to load an image. Call the macro like this:
-  ; LoadImage MockupAssets,MockupAssetsEnd
+  ; LOAD_IMAGE MockupAssets,MockupAssetsEnd
   ; Include format:
   ;    MockupAssets:
   ;      .include "MockupAssets.inc"
   ;    MockupAssetsEnd:
   ; Drop a 256x192 indexed color image on \Tools\MakeAssets.bat to quickly
   ; generate an include file formatted for this macro.
-
+  ;
   ; Assume 16 colors (bmp2tile's -fullpalette option).
   ld a,0
   ld b,16
   ld hl,\1
   call LoadCRam
-
   ; Assume 256x192 full screen image.
   ld bc,NAME_TABLE_SIZE
   ld de,NAME_TABLE_START
   ld hl,\1+16
   call LoadVRam
-
   ; Amount of tiles can vary.
   ld bc,\2-(\1+16+NAME_TABLE_SIZE)
   ld de,0
   ld hl,\1+16+NAME_TABLE_SIZE
   call LoadVRam
 .endm
-
-
-
 .bank 0 slot 0
 .org $0038
 ; ---------------------------------------------------------------------------
@@ -79,63 +69,47 @@
   ei
   reti
 .ends
-
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+.ramsection "Main variables" slot 3
+  CurrentRasterEffectPtr dw
+.ends
 .bank 0 slot 0
 ; -----------------------------------------------------------------------------
 .section "Main" free
 ; -----------------------------------------------------------------------------
   SetupMain:
-    jp Main
-
-  Main:
-    jp SetupBattleLoop
-.ends
-
-; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-.ramsection "Battle loop variables" slot 3
-  CurrentRasterEffectPtr dw
-  RasterEffectMetaTableIndex db
-.ends
-; -----------------------------------------------------------------------------
-.section "Battle Loop" free
-; -----------------------------------------------------------------------------
-  SetupBattleLoop:
-    ; Initialize variables:
-    ld hl,BattleRasterEffectTablesStart
+    ; Initialize the raster effect:
+    ld hl,RasterTablesStart
     ld (CurrentRasterEffectPtr),hl
-
     ld a,RASTER_INTERRUPT_VALUE
     call RasterEffect.Initialize
-
-    ld a,ENEMY_MOVE_INTERVAL
+    ld a,RASTER_TABLE_INTERVAL
     call Timer.Setup
-
     ; Initialize vdp (assume blanked screen and interrupts off):
-    LoadImage MockupAssets,MockupAssetsEnd
-
+    LOAD_IMAGE MockupAssets,MockupAssetsEnd
     ld a,FULL_SCROLL_BLANK_LEFT_COLUMN_KEEP_SPRITES_ENABLE_RASTER_INT
     ld b,0
     call SetRegister
-
     ld a,ENABLE_DISPLAY_ENABLE_FRAME_INTERRUPTS_NORMAL_SPRITES
     ld b,1
     call SetRegister
+    ; Skip an interrupt to make sure that we start main at vblank.
     ei
     call AwaitFrameInterrupt
-    jp BattleLoop
-
-  BattleLoop:
+  jp Main
+  ;
+  Main:
     call AwaitFrameInterrupt
-
+    ;
     ld hl,(CurrentRasterEffectPtr)
     call RasterEffect.BeginNewFrame
-
+    ;
     ; Non-vblank stuff below this line...
-
+    ;
     call Timer.Countdown
     call Timer.IsDone
     jp nc,SkipEnemyMovement
-      ld a,ENEMY_MOVE_INTERVAL
+      ld a,RASTER_TABLE_INTERVAL
       call Timer.Setup
       ld hl,CurrentRasterEffectPtr  ; FIXME: Comment this up!
       ld a,(hl)
@@ -145,24 +119,21 @@
       ld de,6
       add hl,de
       ld (CurrentRasterEffectPtr),hl
-      WordMatch CurrentRasterEffectPtr, BattleRasterEffectTablesEnd
+      MATCH_WORDS CurrentRasterEffectPtr, RasterTablesEnd
       jp nc,+
-        ld hl,BattleRasterEffectTablesStart
+        ld hl,RasterTablesStart
         ld (CurrentRasterEffectPtr),hl
       +:
-
     SkipEnemyMovement:
-
-  jp BattleLoop
-
+    ;
+  jp Main
 .ends
-
 .bank 1 slot 1
   ; Stuff in bank 1 goes here...
-
+  ;
 .bank 2 slot 2
 ; -----------------------------------------------------------------------------
-.section "Battle Raster Effect Data" free
+.section "Raster Tables" free
 ; -----------------------------------------------------------------------------
   .equ ALIGN_SLICES 1
   .equ SKEW_SLICES 0
@@ -177,8 +148,7 @@
       .db ((ONE_ROW*SLICE_POINT_3)+SLICE_POINT_3-1), 0
     .endif
   .endm
-
-  BattleRasterEffectTablesStart:
+  RasterTablesStart:
     MakeRasterEffectTable 0, ALIGN_SLICES
     MakeRasterEffectTable 0, SKEW_SLICES
     MakeRasterEffectTable 2, ALIGN_SLICES
@@ -219,9 +189,8 @@
     MakeRasterEffectTable -4, SKEW_SLICES
     MakeRasterEffectTable -2, ALIGN_SLICES
     MakeRasterEffectTable -2, SKEW_SLICES
-  BattleRasterEffectTablesEnd:
+  RasterTablesEnd:
 .ends
-
 ; -----------------------------------------------------------------------------
 .section "Mockup Assets" free
 ; -----------------------------------------------------------------------------
