@@ -80,7 +80,7 @@
 ; -----------------------------------------------------------------------------
   SetupMain:
     ; Initialize the raster effect:
-    ld hl,RasterTablesStart
+    ld hl,RasterMetaTable
     ld (Raster.Pointer),hl
     ld a,RASTER_INTERRUPT_VALUE
     call RasterEffect.Initialize
@@ -128,9 +128,9 @@
       ld (Raster.Pointer),hl
       ; If we have now moved past the raster effects meta table, then reset
       ; the pointer to the start of the meta table.
-      MATCH_WORDS Raster.Pointer, RasterTablesEnd
+      MATCH_WORDS Raster.Pointer, RasterMetaTableEnd
       jp nc,+
-        ld hl,RasterTablesStart
+        ld hl,RasterMetaTable
         ld (Raster.Pointer),hl
       +:
     SkipRasterPointerUpdate:
@@ -157,7 +157,7 @@
       .db ((ONE_ROW*SLICE_POINT_3)+SLICE_POINT_3-1), 0
     .endif
   .endm
-  RasterTablesStart:
+  RasterMetaTable:
     MakeRasterEffectTable 0, ALIGN_SLICES
     MakeRasterEffectTable 0, SKEW_SLICES
     MakeRasterEffectTable 2, ALIGN_SLICES
@@ -198,7 +198,7 @@
     MakeRasterEffectTable -4, SKEW_SLICES
     MakeRasterEffectTable -2, ALIGN_SLICES
     MakeRasterEffectTable -2, SKEW_SLICES
-  RasterTablesEnd:
+  RasterMetaTableEnd:
 .ends
 ; -----------------------------------------------------------------------------
 .section "Mockup Assets" free

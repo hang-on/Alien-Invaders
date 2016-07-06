@@ -24,8 +24,8 @@
 0000:0071 SetupMain
 0000:00b8 Main
 0000:00fa SkipRasterPointerUpdate
-0002:9090 RasterTablesStart
-0002:9180 RasterTablesEnd
+0002:9090 RasterMetaTable
+0002:9180 RasterMetaTableEnd
 0002:8000 MockupAssets
 0002:8000 MockupPalette
 0002:8010 MockupTilemap
