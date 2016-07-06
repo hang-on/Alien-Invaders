@@ -51,27 +51,18 @@
     call SetRegister
   ret
 .ends
-
-; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-.ramsection "Timer Variables" slot 3
-  Timer.Value db
-.ends
 ; -----------------------------------------------------------------------------
 .section "Timer Functions" free
 ; -----------------------------------------------------------------------------
   Timer.Countdown:
-    ld hl,Timer.Value
+    ld hl,Raster.Timer
     dec (hl)
   ret
 
-  Timer.Setup:
-    ; Entry: A = value 0-255.
-    ld (Timer.Value),a
-  ret
-
+  
   Timer.IsDone:
     ; Exit: Carry set/reset = Timer is done/not yet done.
-    ld a,(Timer.Value)
+    ld a,(Raster.Timer)
     or a
     ret nz
     scf

@@ -6,7 +6,7 @@
 .equ SLICE_POINT_1 5
 .equ SLICE_POINT_2 10
 .equ SLICE_POINT_3 13
-.equ RASTER_TABLE_INTERVAL 45           ; How many frames between each move?
+.equ RASTER_TIMER_INTERVAL 45           ; How many frames between each move?
 ; -----------------------------------------------------------------------------
 .macro MATCH_WORDS ARGS _VARIABLE, _VALUE
 ; -----------------------------------------------------------------------------
@@ -71,7 +71,8 @@
 .ends
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Main variables" slot 3
-  CurrentRasterEffectPtr dw
+  Raster.Pointer dw
+  Raster.Timer db
 .ends
 .bank 0 slot 0
 ; -----------------------------------------------------------------------------
@@ -80,11 +81,11 @@
   SetupMain:
     ; Initialize the raster effect:
     ld hl,RasterTablesStart
-    ld (CurrentRasterEffectPtr),hl
+    ld (Raster.Pointer),hl
     ld a,RASTER_INTERRUPT_VALUE
     call RasterEffect.Initialize
-    ld a,RASTER_TABLE_INTERVAL
-    call Timer.Setup
+    ld a,RASTER_TIMER_INTERVAL
+    ld (Raster.Timer),a
     ; Initialize vdp (assume blanked screen and interrupts off):
     LOAD_IMAGE MockupAssets,MockupAssetsEnd
     ld a,FULL_SCROLL_BLANK_LEFT_COLUMN_KEEP_SPRITES_ENABLE_RASTER_INT
@@ -100,8 +101,8 @@
   ;
   Main:
     call AwaitFrameInterrupt
-    ;
-    ld hl,(CurrentRasterEffectPtr)
+    ; This is first line of vblank. Time to update the vdp...
+    ld hl,(Raster.Pointer)
     call RasterEffect.BeginNewFrame
     ;
     ; Non-vblank stuff below this line...
@@ -109,20 +110,20 @@
     call Timer.Countdown
     call Timer.IsDone
     jp nc,SkipEnemyMovement
-      ld a,RASTER_TABLE_INTERVAL
-      call Timer.Setup
-      ld hl,CurrentRasterEffectPtr  ; FIXME: Comment this up!
+      ld a,RASTER_TIMER_INTERVAL
+      ld (Raster.Timer),a
+      ld hl,Raster.Pointer  ; FIXME: Comment this up!
       ld a,(hl)
       inc hl
       ld h,(hl)
       ld l,a
       ld de,6
       add hl,de
-      ld (CurrentRasterEffectPtr),hl
-      MATCH_WORDS CurrentRasterEffectPtr, RasterTablesEnd
+      ld (Raster.Pointer),hl
+      MATCH_WORDS Raster.Pointer, RasterTablesEnd
       jp nc,+
         ld hl,RasterTablesStart
-        ld (CurrentRasterEffectPtr),hl
+        ld (Raster.Pointer),hl
       +:
     SkipEnemyMovement:
     ;
