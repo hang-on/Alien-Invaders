@@ -1,51 +1,5 @@
 ; Invaderlib.inc
 
-.macro WordMatch ARGS _VARIABLE, _VALUE
-  or a              ; Clear carry so it does not interfere with sbc below.
-  ld hl,_VARIABLE
-  ld a,(hl)
-  inc hl
-  ld h,(hl)
-  ld l,a
-  ld de,_VALUE
-  sbc hl,de
-  scf
-  jp z,+
-    or a
-  +:
-.endm
-
-
-; -----------------------------------------------------------------------------
-.macro LoadImage
-; -----------------------------------------------------------------------------
-  ; This macro makes it easy to load an image. Call the macro like this:
-  ; LoadImage MockupAssets,MockupAssetsEnd
-  ; Include format:
-  ;    MockupAssets:
-  ;      .include "MockupAssets.inc"
-  ;    MockupAssetsEnd:
-  ; Drop a 256x192 indexed color image on \Tools\MakeAssets.bat to quickly
-  ; generate an include file formatted for this macro.
-
-  ; Assume 16 colors (bmp2tile's -fullpalette option).
-  ld a,0
-  ld b,16
-  ld hl,\1
-  call LoadCRam
-
-  ; Assume 256x192 full screen image.
-  ld bc,NAME_TABLE_SIZE
-  ld de,NAME_TABLE_START
-  ld hl,\1+16
-  call LoadVRam
-
-  ; Amount of tiles can vary.
-  ld bc,\2-(\1+16+NAME_TABLE_SIZE)
-  ld de,0
-  ld hl,\1+16+NAME_TABLE_SIZE
-  call LoadVRam
-.endm
 
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Raster Effect Variables" slot 3
