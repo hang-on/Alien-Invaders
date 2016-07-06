@@ -2,10 +2,8 @@
 ; Definitions for raster effects
 .equ ONE_ROW 7
 .equ RASTER_INTERRUPT_VALUE ONE_ROW
-.equ SLICE_POINT_1 5
-.equ SLICE_POINT_2 10
-.equ SLICE_POINT_3 13
 .equ RASTER_TIMER_INTERVAL 45           ; How many frames between each move?
+.equ RASTER_EFFECT_TABLE_SIZE 6         ;
 ; -----------------------------------------------------------------------------
 .macro MATCH_WORDS ARGS _VARIABLE, _VALUE
 ; -----------------------------------------------------------------------------
@@ -83,7 +81,8 @@
     ld hl,RasterMetaTable
     ld (Raster.MetaTablePointer),hl
     ld a,RASTER_INTERRUPT_VALUE
-    call RasterEffect.Initialize
+    ld b,RASTER_INTERRUPT_REGISTER
+    call SetRegister
     ld a,RASTER_TIMER_INTERVAL
     ld (Raster.Timer),a
     ; Initialize vdp (assume blanked screen and interrupts off):
@@ -111,18 +110,18 @@
     dec (hl)
     ld a,(Raster.Timer)
     or a
-    jp nz,SkipRasterPointerUpdate
-      ; Time to update the raster effect pointer. First set the timer.
+    jp nz,SkipRasterMetaTablePointerUpdate
+      ; Time to update the raster meta table pointer. First set the timer.
       ld a,RASTER_TIMER_INTERVAL
       ld (Raster.Timer),a
-      ; Load the current raster pointer into HL.
+      ; Load the current raster meta table pointer into HL.
       ld hl,Raster.MetaTablePointer
       ld a,(hl)
       inc hl
       ld h,(hl)
       ld l,a
       ; Skip forward one raster effect table element.
-      ld de,6
+      ld de,RASTER_EFFECT_TABLE_SIZE
       add hl,de
       ; Load the updated pointer from HL back into ram.
       ld (Raster.MetaTablePointer),hl
@@ -133,7 +132,7 @@
         ld hl,RasterMetaTable
         ld (Raster.MetaTablePointer),hl
       +:
-    SkipRasterPointerUpdate:
+    SkipRasterMetaTablePointerUpdate:
     ;
   jp Main
 .ends
@@ -142,14 +141,8 @@
 ; -----------------------------------------------------------------------------
   RasterEffect.BeginNewFrame:
     ; Point Raster.ActiveEffect to the base of the raster effect table
-    ; to be used to make raster effects during this frame. Then reset the
-    ; vdp's hscroll register. Assumes blanked display and no interrupts.
-    ; Entry: HL = Base address of this frame's raster effect table.
-    ; Uses: AF, B, HL
+    ; to be used to make raster effects during this frame.
     ld (Raster.ActiveEffect),hl
-    ld a,0
-    ld b,HORIZONTAL_SCROLL_REGISTER
-    call SetRegister
   ret
   ;
   RasterEffect.HandleRasterInterrupt:
@@ -172,16 +165,6 @@
     inc hl
     ld (Raster.ActiveEffect),hl
   ret
-  ;
-  RasterEffect.Initialize:
-    ; Initialize the raster effect engine.
-    ; Assumes blanked display and no interrupts.
-    ; Entry: A = Value to load into the raster interrupt register (number of
-    ;            lines per interrupt - 1).
-    ; Uses: AF, B
-    ld b,RASTER_INTERRUPT_REGISTER
-    call SetRegister
-  ret
 .ends
 .bank 1 slot 1
   ; Stuff in bank 1 goes here...
@@ -190,12 +173,24 @@
 ; -----------------------------------------------------------------------------
 .section "Raster Tables" free
 ; -----------------------------------------------------------------------------
-  .equ ALIGN_SLICES 1
-  .equ SKEW_SLICES 0
+  .equ ALIGN_SLICES 1     ; Alien movement - align trooper and shield slices.
+  .equ SKEW_SLICES 0      ; Alien movement - skew the slices.
+  .equ SKEW_VALUE 8       ; Amount of pixel to skew the slices.
+  .equ SLICE_POINT_1 5    ; Screen layout - start of trooper slice.
+  .equ SLICE_POINT_2 10   ;               - start of shield slice.
+  .equ SLICE_POINT_3 13   ;               - end of shield slice (reset scroll).
   .macro MakeRasterEffectTable ARGS OFFSET, SLICE_MODE
+    ; A raster effect table consists of three pairs of [slicepoint, offset].
+    ; This way the screen can be sliced in three parts:
+    ; * 1: Alien army troopers and cannons - scroll     *
+    ; * 2: Alien army shields              - scroll     *
+    ; * 3: Bottom and top of screen        - no scroll  *
     .if SLICE_MODE == SKEW_SLICES
-      .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), OFFSET+8
-      .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1), OFFSET-8
+      ; Create slice for alien troops and cannons.
+      .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), OFFSET+SKEW_VALUE
+      ; Create slice for alien shields.
+      .db ((ONE_ROW*SLICE_POINT_2)+SLICE_POINT_2-1), OFFSET-SKEW_VALUE
+      ; Reset scroll until we hit the troops-and-cannon slice next frame.
       .db ((ONE_ROW*SLICE_POINT_3)+SLICE_POINT_3-1), 0
     .else
       .db ((ONE_ROW*SLICE_POINT_1)+SLICE_POINT_1-1), OFFSET
@@ -204,6 +199,7 @@
     .endif
   .endm
   RasterMetaTable:
+    ; The raster meta table consists of a long list of raster effect tables.
     MakeRasterEffectTable 0, ALIGN_SLICES
     MakeRasterEffectTable 0, SKEW_SLICES
     MakeRasterEffectTable 2, ALIGN_SLICES
