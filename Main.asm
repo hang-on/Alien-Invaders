@@ -3,7 +3,7 @@
 .equ ONE_ROW 7
 .equ RASTER_INTERRUPT_VALUE ONE_ROW
 .equ RASTER_TIMER_INTERVAL 45           ; How many frames between each move?
-.equ RASTER_EFFECT_TABLE_SIZE 6         ;
+.equ RASTER_EFFECT_TABLE_SIZE 6         ; 3 pairs [slicepoint, scroll] bytes.
 ; -----------------------------------------------------------------------------
 .macro MATCH_WORDS ARGS _VARIABLE, _VALUE
 ; -----------------------------------------------------------------------------
