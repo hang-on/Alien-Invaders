@@ -107,9 +107,11 @@
     ;
     ; Non-vblank stuff below this line...
     ;
-    call Timer.Countdown
-    call Timer.IsDone
-    jp nc,SkipRasterPointerUpdate
+    ld hl,Raster.Timer
+    dec (hl)
+    ld a,(Raster.Timer)
+    or a
+    jp nz,SkipRasterPointerUpdate
       ; Time to update the raster effect pointer. First set the timer.
       ld a,RASTER_TIMER_INTERVAL
       ld (Raster.Timer),a

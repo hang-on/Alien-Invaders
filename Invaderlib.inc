@@ -51,21 +51,3 @@
     call SetRegister
   ret
 .ends
-; -----------------------------------------------------------------------------
-.section "Timer Functions" free
-; -----------------------------------------------------------------------------
-  Timer.Countdown:
-    ld hl,Raster.Timer
-    dec (hl)
-  ret
-
-  
-  Timer.IsDone:
-    ; Exit: Carry set/reset = Timer is done/not yet done.
-    ld a,(Raster.Timer)
-    or a
-    ret nz
-    scf
-  ret
-
-.ends
