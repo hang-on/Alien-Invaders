@@ -102,7 +102,7 @@
     call AwaitFrameInterrupt
     ; This is first line of vblank. Time to update the vdp...
     ld hl,(Raster.MetaTablePointer)
-    call RasterEffect.BeginNewFrame
+    ld (Raster.ActiveEffect),hl
     ;
     ; Non-vblank stuff below this line...
     ;
@@ -135,15 +135,6 @@
     SkipRasterMetaTablePointerUpdate:
     ;
   jp Main
-.ends
-; -----------------------------------------------------------------------------
-.section "Raster Effect Functions" free
-; -----------------------------------------------------------------------------
-  RasterEffect.BeginNewFrame:
-    ; Point Raster.ActiveEffect to the base of the raster effect table
-    ; to be used to make raster effects during this frame.
-    ld (Raster.ActiveEffect),hl
-  ret
   ;
   RasterEffect.HandleRasterInterrupt:
     ; This function assumes it is called from the interrupt handler. Check if
@@ -166,6 +157,7 @@
     ld (Raster.ActiveEffect),hl
   ret
 .ends
+;
 .bank 1 slot 1
   ; Stuff in bank 1 goes here...
   ;
