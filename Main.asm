@@ -3,6 +3,9 @@
 .equ ONE_ROW 7
 .equ RASTER_INTERRUPT_VALUE ONE_ROW
 .equ RASTER_TIMER_INTERVAL 45           ; How many frames between each move?
+  .equ SLICE_POINT_1 5                  ; Screen layout -  trooper slice.
+  .equ SLICE_POINT_2 10                 ; - start of shield slice.
+  .equ SLICE_POINT_3 13                 ; - end of shield slice (reset scroll).
 ; -----------------------------------------------------------------------------
 .macro MATCH_WORDS ARGS _VARIABLE, _VALUE
 ; -----------------------------------------------------------------------------
@@ -170,9 +173,6 @@
   .equ ALIGN_SLICES 1     ; Alien movement - align trooper and shield slices.
   .equ SKEW_SLICES 0      ; Alien movement - skew the slices.
   .equ SKEW_VALUE 8       ; Amount of pixel to skew the slices.
-  .equ SLICE_POINT_1 5    ; Screen layout - start of trooper slice.
-  .equ SLICE_POINT_2 10   ;               - start of shield slice.
-  .equ SLICE_POINT_3 13   ;               - end of shield slice (reset scroll).
   .equ RASTER_EFFECT_TABLE_SIZE 6         ; 3 pairs [slicepoint, scroll] bytes.
   .macro MakeRasterEffectTable ARGS OFFSET, SLICE_MODE
     ; A raster effect table consists of three pairs of [slicepoint, offset].
