@@ -64,7 +64,7 @@
     ld (VDPStatus),a
     bit 7,a
     jp nz,+
-      call Raster.HandleInterrupt
+      call raster_handle_interrupt
     +:
   exx
   pop af
@@ -73,9 +73,9 @@
 .ends
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Main variables" slot 3
-  Raster.MetaEffectPtr dw   ; Cycles through the table of raster effects.
-  Raster.EffectPtr dw       ; Set up up the current frame's raster effect.
-  Raster.Timer db           ; When it is done, get next effect from meta table.
+  raster_meta_effect_ptr dw   ; Cycles through the table of raster effects.
+  raster_effect_ptr dw       ; Set up up the current frame's raster effect.
+  raster_timer db           ; When it is done, get next effect from meta table.
 .ends
 .bank 0 slot 0
 ; -----------------------------------------------------------------------------
@@ -83,13 +83,13 @@
 ; -----------------------------------------------------------------------------
   SetupMain:
     ; Initialize the raster effect:
-    ld hl,RasterMetaTable
-    ld (Raster.MetaEffectPtr),hl
+    ld hl,raster_meta_table
+    ld (raster_meta_effect_ptr),hl
     ld a,RASTER_INTERRUPT_VALUE
     ld b,RASTER_INTERRUPT_REGISTER
     call SetRegister
     ld a,RASTER_TIMER_INTERVAL
-    ld (Raster.Timer),a
+    ld (raster_timer),a
     ; Initialize vdp (assume blanked screen and interrupts off):
     LOAD_IMAGE MockupAssets,MockupAssetsEnd
     ld a,FULL_SCROLL_BLANK_LEFT_COLUMN_KEEP_SPRITES_ENABLE_RASTER_INT
@@ -106,21 +106,21 @@
   Main:
     call AwaitFrameInterrupt
     ; This is first line of vblank. Time to update the vdp...
-    ld hl,(Raster.MetaEffectPtr)
-    ld (Raster.EffectPtr),hl
+    ld hl,(raster_meta_effect_ptr)
+    ld (raster_effect_ptr),hl
     ;
     ; Non-vblank stuff below this line...
     ;
-    ld hl,Raster.Timer
+    ld hl,raster_timer
     dec (hl)
-    ld a,(Raster.Timer)
+    ld a,(raster_timer)
     or a
     jp nz,SkipRasterMetaTablePointerUpdate
       ; Time to update the raster meta table pointer. First set the timer.
       ld a,RASTER_TIMER_INTERVAL
-      ld (Raster.Timer),a
+      ld (raster_timer),a
       ; Load the current raster meta table pointer into HL.
-      ld hl,Raster.MetaEffectPtr
+      ld hl,raster_meta_effect_ptr
       ld a,(hl)
       inc hl
       ld h,(hl)
@@ -129,19 +129,19 @@
       ld de,RASTER_EFFECT_TABLE_SIZE
       add hl,de
       ; Load the updated pointer from HL back into ram.
-      ld (Raster.MetaEffectPtr),hl
+      ld (raster_meta_effect_ptr),hl
       ; If we have now moved past the raster effects meta table, then reset
       ; the pointer to the start of the meta table.
-      MATCH_WORDS Raster.MetaEffectPtr, RasterMetaTableEnd
+      MATCH_WORDS raster_meta_effect_ptr, raster_meta_table_end
       jp nc,+
-        ld hl,RasterMetaTable
-        ld (Raster.MetaEffectPtr),hl
+        ld hl,raster_meta_table
+        ld (raster_meta_effect_ptr),hl
       +:
     SkipRasterMetaTablePointerUpdate:
     ;
   jp Main
   ;
-  Raster.HandleInterrupt:
+  raster_handle_interrupt:
     ; This function assumes it is called from the interrupt handler. Check if
     ; the current line = next slice point, which is read from this frame's
     ; raster effect table. If we are at a slice point then slice the screen by
@@ -150,7 +150,7 @@
     ; Uses: AF, B, HL
     in a,(V_COUNTER_PORT)
     ld b,a
-    ld hl,(Raster.EffectPtr)
+    ld hl,(raster_effect_ptr)
     ld a,(hl)                       ; Load A with next slice point value.
     cp b                            ; Is the current line == next slice point?
     ret nz                          ; If not, then just return.
@@ -159,7 +159,7 @@
     ld b,HORIZONTAL_SCROLL_REGISTER ; horizontal scroll register to the given
     call SetRegister                ; value.
     inc hl                          ; Finish by incrementing the pointer and
-    ld (Raster.EffectPtr),hl     ; loading it back into memory. Now it is
+    ld (raster_effect_ptr),hl     ; loading it back into memory. Now it is
   ret                               ; pointing at the next slicepoint...
 .ends
 ;
@@ -174,7 +174,7 @@
   .equ SKEW_SLICES 0      ; Alien movement - skew the slices.
   .equ SKEW_VALUE 8       ; Amount of pixel to skew the slices.
   .equ RASTER_EFFECT_TABLE_SIZE 6         ; 3 pairs [slicepoint, scroll] bytes.
-  .macro MakeRasterEffectTable ARGS OFFSET, SLICE_MODE
+  .macro MAKE_RASTER_EFFECT_TABLE ARGS OFFSET, SLICE_MODE
     ; A raster effect table consists of three pairs of [slicepoint, offset].
     ; This way the screen can be sliced in three parts:
     ; * 1: Alien army troopers and cannons - scroll     *
@@ -193,49 +193,49 @@
       .db ((ONE_ROW*SLICE_POINT_3)+SLICE_POINT_3-1), 0
     .endif
   .endm
-  RasterMetaTable:
+  raster_meta_table:
     ; The raster meta table consists of a long list of raster effect tables.
-    MakeRasterEffectTable 0, ALIGN_SLICES
-    MakeRasterEffectTable 0, SKEW_SLICES
-    MakeRasterEffectTable 2, ALIGN_SLICES
-    MakeRasterEffectTable 2, SKEW_SLICES
-    MakeRasterEffectTable 4, ALIGN_SLICES
-    MakeRasterEffectTable 4, SKEW_SLICES
-    MakeRasterEffectTable 6, ALIGN_SLICES
-    MakeRasterEffectTable 6, SKEW_SLICES
-    MakeRasterEffectTable 8, ALIGN_SLICES
-    MakeRasterEffectTable 8, SKEW_SLICES
-    MakeRasterEffectTable 10, ALIGN_SLICES
-    MakeRasterEffectTable 10, SKEW_SLICES
-    MakeRasterEffectTable 8, ALIGN_SLICES
-    MakeRasterEffectTable 8, SKEW_SLICES
-    MakeRasterEffectTable 6, ALIGN_SLICES
-    MakeRasterEffectTable 6, SKEW_SLICES
-    MakeRasterEffectTable 4, ALIGN_SLICES
-    MakeRasterEffectTable 4, SKEW_SLICES
-    MakeRasterEffectTable 2, ALIGN_SLICES
-    MakeRasterEffectTable 2, SKEW_SLICES
-    MakeRasterEffectTable 0, ALIGN_SLICES
-    MakeRasterEffectTable 0, SKEW_SLICES
-    MakeRasterEffectTable -2, ALIGN_SLICES
-    MakeRasterEffectTable -2, SKEW_SLICES
-    MakeRasterEffectTable -4, ALIGN_SLICES
-    MakeRasterEffectTable -4, SKEW_SLICES
-    MakeRasterEffectTable -6, ALIGN_SLICES
-    MakeRasterEffectTable -6, SKEW_SLICES
-    MakeRasterEffectTable -8, ALIGN_SLICES
-    MakeRasterEffectTable -8, SKEW_SLICES
-    MakeRasterEffectTable -10, ALIGN_SLICES
-    MakeRasterEffectTable -10, SKEW_SLICES
-    MakeRasterEffectTable -8, ALIGN_SLICES
-    MakeRasterEffectTable -8, SKEW_SLICES
-    MakeRasterEffectTable -6, ALIGN_SLICES
-    MakeRasterEffectTable -6, SKEW_SLICES
-    MakeRasterEffectTable -4, ALIGN_SLICES
-    MakeRasterEffectTable -4, SKEW_SLICES
-    MakeRasterEffectTable -2, ALIGN_SLICES
-    MakeRasterEffectTable -2, SKEW_SLICES
-  RasterMetaTableEnd:
+    MAKE_RASTER_EFFECT_TABLE 0, ALIGN_SLICES
+    MAKE_RASTER_EFFECT_TABLE 0, SKEW_SLICES
+    MAKE_RASTER_EFFECT_TABLE 2, ALIGN_SLICES
+    MAKE_RASTER_EFFECT_TABLE 2, SKEW_SLICES
+    MAKE_RASTER_EFFECT_TABLE 4, ALIGN_SLICES
+    MAKE_RASTER_EFFECT_TABLE 4, SKEW_SLICES
+    MAKE_RASTER_EFFECT_TABLE 6, ALIGN_SLICES
+    MAKE_RASTER_EFFECT_TABLE 6, SKEW_SLICES
+    MAKE_RASTER_EFFECT_TABLE 8, ALIGN_SLICES
+    MAKE_RASTER_EFFECT_TABLE 8, SKEW_SLICES
+    MAKE_RASTER_EFFECT_TABLE 10, ALIGN_SLICES
+    MAKE_RASTER_EFFECT_TABLE 10, SKEW_SLICES
+    MAKE_RASTER_EFFECT_TABLE 8, ALIGN_SLICES
+    MAKE_RASTER_EFFECT_TABLE 8, SKEW_SLICES
+    MAKE_RASTER_EFFECT_TABLE 6, ALIGN_SLICES
+    MAKE_RASTER_EFFECT_TABLE 6, SKEW_SLICES
+    MAKE_RASTER_EFFECT_TABLE 4, ALIGN_SLICES
+    MAKE_RASTER_EFFECT_TABLE 4, SKEW_SLICES
+    MAKE_RASTER_EFFECT_TABLE 2, ALIGN_SLICES
+    MAKE_RASTER_EFFECT_TABLE 2, SKEW_SLICES
+    MAKE_RASTER_EFFECT_TABLE 0, ALIGN_SLICES
+    MAKE_RASTER_EFFECT_TABLE 0, SKEW_SLICES
+    MAKE_RASTER_EFFECT_TABLE -2, ALIGN_SLICES
+    MAKE_RASTER_EFFECT_TABLE -2, SKEW_SLICES
+    MAKE_RASTER_EFFECT_TABLE -4, ALIGN_SLICES
+    MAKE_RASTER_EFFECT_TABLE -4, SKEW_SLICES
+    MAKE_RASTER_EFFECT_TABLE -6, ALIGN_SLICES
+    MAKE_RASTER_EFFECT_TABLE -6, SKEW_SLICES
+    MAKE_RASTER_EFFECT_TABLE -8, ALIGN_SLICES
+    MAKE_RASTER_EFFECT_TABLE -8, SKEW_SLICES
+    MAKE_RASTER_EFFECT_TABLE -10, ALIGN_SLICES
+    MAKE_RASTER_EFFECT_TABLE -10, SKEW_SLICES
+    MAKE_RASTER_EFFECT_TABLE -8, ALIGN_SLICES
+    MAKE_RASTER_EFFECT_TABLE -8, SKEW_SLICES
+    MAKE_RASTER_EFFECT_TABLE -6, ALIGN_SLICES
+    MAKE_RASTER_EFFECT_TABLE -6, SKEW_SLICES
+    MAKE_RASTER_EFFECT_TABLE -4, ALIGN_SLICES
+    MAKE_RASTER_EFFECT_TABLE -4, SKEW_SLICES
+    MAKE_RASTER_EFFECT_TABLE -2, ALIGN_SLICES
+    MAKE_RASTER_EFFECT_TABLE -2, SKEW_SLICES
+  raster_meta_table_end:
 .ends
 ; -----------------------------------------------------------------------------
 .section "Mockup Assets" free
