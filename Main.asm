@@ -3,7 +3,6 @@
 .equ ONE_ROW 7
 .equ RASTER_INTERRUPT_VALUE ONE_ROW
 .equ RASTER_TIMER_INTERVAL 45           ; How many frames between each move?
-.equ RASTER_EFFECT_TABLE_SIZE 6         ; 3 pairs [slicepoint, scroll] bytes.
 ; -----------------------------------------------------------------------------
 .macro MATCH_WORDS ARGS _VARIABLE, _VALUE
 ; -----------------------------------------------------------------------------
@@ -68,9 +67,9 @@
 .ends
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Main variables" slot 3
-  Raster.MetaTablePointer dw
-  Raster.ActiveEffect dw
-  Raster.Timer db
+  Raster.MetaEffectPtr dw   ; Cycles through the table of raster effects.
+  Raster.EffectPtr dw       ; Set up up the current frame's raster effect.
+  Raster.Timer db           ; When it is done, get next effect from meta table.
 .ends
 .bank 0 slot 0
 ; -----------------------------------------------------------------------------
@@ -79,7 +78,7 @@
   SetupMain:
     ; Initialize the raster effect:
     ld hl,RasterMetaTable
-    ld (Raster.MetaTablePointer),hl
+    ld (Raster.MetaEffectPtr),hl
     ld a,RASTER_INTERRUPT_VALUE
     ld b,RASTER_INTERRUPT_REGISTER
     call SetRegister
@@ -101,8 +100,8 @@
   Main:
     call AwaitFrameInterrupt
     ; This is first line of vblank. Time to update the vdp...
-    ld hl,(Raster.MetaTablePointer)
-    ld (Raster.ActiveEffect),hl
+    ld hl,(Raster.MetaEffectPtr)
+    ld (Raster.EffectPtr),hl
     ;
     ; Non-vblank stuff below this line...
     ;
@@ -115,7 +114,7 @@
       ld a,RASTER_TIMER_INTERVAL
       ld (Raster.Timer),a
       ; Load the current raster meta table pointer into HL.
-      ld hl,Raster.MetaTablePointer
+      ld hl,Raster.MetaEffectPtr
       ld a,(hl)
       inc hl
       ld h,(hl)
@@ -124,13 +123,13 @@
       ld de,RASTER_EFFECT_TABLE_SIZE
       add hl,de
       ; Load the updated pointer from HL back into ram.
-      ld (Raster.MetaTablePointer),hl
+      ld (Raster.MetaEffectPtr),hl
       ; If we have now moved past the raster effects meta table, then reset
       ; the pointer to the start of the meta table.
-      MATCH_WORDS Raster.MetaTablePointer, RasterMetaTableEnd
+      MATCH_WORDS Raster.MetaEffectPtr, RasterMetaTableEnd
       jp nc,+
         ld hl,RasterMetaTable
-        ld (Raster.MetaTablePointer),hl
+        ld (Raster.MetaEffectPtr),hl
       +:
     SkipRasterMetaTablePointerUpdate:
     ;
@@ -145,7 +144,7 @@
     ; Uses: AF, B, HL
     in a,(V_COUNTER_PORT)
     ld b,a
-    ld hl,(Raster.ActiveEffect)
+    ld hl,(Raster.EffectPtr)
     ld a,(hl)                       ; Load A with next slice point value.
     cp b                            ; Is the current line == next slice point?
     ret nz                          ; If not, then just return.
@@ -154,7 +153,7 @@
     ld b,HORIZONTAL_SCROLL_REGISTER ; horizontal scroll register to the given
     call SetRegister                ; value.
     inc hl                          ; Finish by incrementing the pointer and
-    ld (Raster.ActiveEffect),hl     ; loading it back into memory. Now it is
+    ld (Raster.EffectPtr),hl     ; loading it back into memory. Now it is
   ret                               ; pointing at the next slicepoint...
 .ends
 ;
@@ -171,6 +170,7 @@
   .equ SLICE_POINT_1 5    ; Screen layout - start of trooper slice.
   .equ SLICE_POINT_2 10   ;               - start of shield slice.
   .equ SLICE_POINT_3 13   ;               - end of shield slice (reset scroll).
+  .equ RASTER_EFFECT_TABLE_SIZE 6         ; 3 pairs [slicepoint, scroll] bytes.
   .macro MakeRasterEffectTable ARGS OFFSET, SLICE_MODE
     ; A raster effect table consists of three pairs of [slicepoint, offset].
     ; This way the screen can be sliced in three parts:

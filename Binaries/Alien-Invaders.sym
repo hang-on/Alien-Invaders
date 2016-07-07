@@ -15,8 +15,8 @@
 0000:0155 LoadCRam
 0000:0132 LoadVRam
 0000:0162 SetRegister
-0000:c000 Raster.MetaTablePointer
-0000:c002 Raster.ActiveEffect
+0000:c000 Raster.MetaEffectPtr
+0000:c002 Raster.EffectPtr
 0000:c004 Raster.Timer
 0000:0071 SetupMain
 0000:00ba Main
