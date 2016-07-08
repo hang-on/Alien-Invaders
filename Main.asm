@@ -73,8 +73,8 @@
 .ends
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Main variables" slot 3
-  raster_meta_effect_ptr dw   ; Cycles through the table of raster effects.
-  raster_effect_ptr dw       ; Set up up the current frame's raster effect.
+  raster_meta_effect_ptr dw ; Cycles through the table of raster effects.
+  raster_effect_ptr dw      ; Set up up the current frame's raster effect.
   raster_timer db           ; When it is done, get next effect from meta table.
 .ends
 .bank 0 slot 0
