@@ -66,8 +66,9 @@
   ei
   reti
 .ends
-
+;
 .equ ARMY_BUFFER_SIZE 7*32*2
+.equ FIRST_ARMY_TILE
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Main variables" slot 3
   raster_meta_effect_ptr dw ; Cycles through the table of raster effects.
