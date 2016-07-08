@@ -6,7 +6,7 @@
   .equ SLICE_POINT_1 5                  ; Screen layout -  trooper slice.
   .equ SLICE_POINT_2 10                 ; - start of shield slice.
   .equ SLICE_POINT_3 13                 ; - end of shield slice (reset scroll).
-  .equ ARMY_BUFFER_SIZE 7*32
+  .equ ARMY_BUFFER_SIZE 7*32*2
 ; -----------------------------------------------------------------------------
 .macro MATCH_WORDS ARGS _VARIABLE, _VALUE
 ; -----------------------------------------------------------------------------
