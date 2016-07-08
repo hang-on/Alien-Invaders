@@ -92,7 +92,10 @@
     ;
     LOAD_IMAGE MockupAssets,MockupAssetsEnd
     ;
-
+    ld bc,ARMY_BUFFER_SIZE
+    ld hl,NAME_TABLE_START
+    ld de,army_buffer
+    call ReadVRam
     ;
     ld a,FULL_SCROLL_BLANK_LEFT_COLUMN_KEEP_SPRITES_ENABLE_RASTER_INT
     ld b,0

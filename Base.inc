@@ -18,6 +18,7 @@
 .equ CONTROL_PORT $BF
 .equ DATA_PORT $BE
 .equ VRAM_WRITE_COMMAND %01000000
+.equ VRAM_READ_COMMAND %00000000
 .equ REGISTER_WRITE_COMMAND %10000000
 .equ CRAM_WRITE_COMMAND %11000000
 
@@ -433,6 +434,31 @@
       ld a,(hl)
       out (DATA_PORT),a
       inc hl
+      dec bc
+      ld a,c
+      or b
+    jp nz,-
+  ret
+.ends
+
+; -----------------------------------------------------------------------------
+.section "ReadVRam" free
+; -----------------------------------------------------------------------------
+  ; Read a number of bytes from vram into a buffer.
+  ; Entry: BC = Number of bytes to read
+  ;        DE = Destination address in ram (buffer)
+  ;        HL = Source address in vram
+  ; Uses: AF, BC, DE, HL,
+  ReadVRam:
+    ld a,l
+    out (CONTROL_PORT),a
+    ld a,h
+    or VRAM_READ_COMMAND
+    out (CONTROL_PORT),a
+    -:
+      in a,(DATA_PORT)
+      ld (de),a
+      inc de
       dec bc
       ld a,c
       or b
