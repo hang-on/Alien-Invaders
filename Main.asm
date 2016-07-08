@@ -6,6 +6,7 @@
   .equ SLICE_POINT_1 5                  ; Screen layout -  trooper slice.
   .equ SLICE_POINT_2 10                 ; - start of shield slice.
   .equ SLICE_POINT_3 13                 ; - end of shield slice (reset scroll).
+  .equ ARMY_BUFFER_SIZE 7*32
 ; -----------------------------------------------------------------------------
 .macro MATCH_WORDS ARGS _VARIABLE, _VALUE
 ; -----------------------------------------------------------------------------
@@ -76,6 +77,8 @@
   raster_meta_effect_ptr dw ; Cycles through the table of raster effects.
   raster_effect_ptr dw      ; Set up up the current frame's raster effect.
   raster_timer db           ; When it is done, get next effect from meta table.
+  ;
+  army_buffer dsb ARMY_BUFFER_SIZE
 .ends
 .bank 0 slot 0
 ; -----------------------------------------------------------------------------
@@ -90,8 +93,11 @@
     call SetRegister
     ld a,RASTER_TIMER_INTERVAL
     ld (raster_timer),a
-    ; Initialize vdp (assume blanked screen and interrupts off):
+    ;
     LOAD_IMAGE MockupAssets,MockupAssetsEnd
+    ;
+
+    ;
     ld a,FULL_SCROLL_BLANK_LEFT_COLUMN_KEEP_SPRITES_ENABLE_RASTER_INT
     ld b,0
     call SetRegister
