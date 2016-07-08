@@ -68,7 +68,7 @@
 .ends
 ;
 .equ ARMY_BUFFER_SIZE 7*32*2
-.equ FIRST_ARMY_TILE
+.equ FIRST_ARMY_TILE $3940
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Main variables" slot 3
   raster_meta_effect_ptr dw ; Cycles through the table of raster effects.
@@ -93,10 +93,18 @@
     ;
     LOAD_IMAGE MockupAssets,MockupAssetsEnd
     ;
+    ; Read army tilemap from vram into a buffer.
     ld bc,ARMY_BUFFER_SIZE
-    ld hl,NAME_TABLE_START
+    ld hl,FIRST_ARMY_TILE   ; First tile of the blank line over the army...
     ld de,army_buffer
     call ReadVRam
+    ;
+    ; Test: Write army back from buffer
+    ; FIXME: It works, but adjust the image (mov. army 1-2 pixels down!)
+    ld bc,ARMY_BUFFER_SIZE
+    ld hl,army_buffer
+    ld de,FIRST_ARMY_TILE+32*2
+    call LoadVRam
     ;
     ld a,FULL_SCROLL_BLANK_LEFT_COLUMN_KEEP_SPRITES_ENABLE_RASTER_INT
     ld b,0
