@@ -2,9 +2,9 @@
 ; wla symbolic information for "Binaries\Alien-Invaders.sms".
 
 [labels]
-0000:c0e5 VDPStatus
-0000:c0e6 PauseFlag
-0000:c0e7 InputPorts
+0000:c1c5 VDPStatus
+0000:c1c6 PauseFlag
+0000:c1c7 InputPorts
 0000:001d _MapperInitData
 0000:0145 AwaitFrameInterrupt
 0000:0021 ClearRam
@@ -23,10 +23,10 @@
 0000:00ba Main
 0000:00fc skip_raster_update
 0000:00ff raster_handle_interrupt
-0002:9090 raster_meta_table
-0002:9180 raster_meta_table_end
-0002:8000 MockupAssets
-0002:8000 MockupPalette
-0002:8010 MockupTilemap
-0002:8610 MockupTiles
-0002:9090 MockupAssetsEnd
+0001:5090 raster_meta_table
+0001:5180 raster_meta_table_end
+0001:4000 MockupAssets
+0001:4000 MockupPalette
+0001:4010 MockupTilemap
+0001:4610 MockupTiles
+0001:5090 MockupAssetsEnd

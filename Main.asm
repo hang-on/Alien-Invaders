@@ -1,12 +1,6 @@
 .include "Base.inc"
 ; Definitions for raster effects
-.equ ONE_ROW 7
-.equ RASTER_INTERRUPT_VALUE ONE_ROW
 .equ RASTER_TIMER_INTERVAL 45           ; How many frames between each move?
-  .equ SLICE_POINT_1 5                  ; Screen layout -  trooper slice.
-  .equ SLICE_POINT_2 10                 ; - start of shield slice.
-  .equ SLICE_POINT_3 13                 ; - end of shield slice (reset scroll).
-  .equ ARMY_BUFFER_SIZE 7*32*2
 ; -----------------------------------------------------------------------------
 .macro MATCH_WORDS ARGS _VARIABLE, _VALUE
 ; -----------------------------------------------------------------------------
@@ -72,6 +66,8 @@
   ei
   reti
 .ends
+
+.equ ARMY_BUFFER_SIZE 7*32*2
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Main variables" slot 3
   raster_meta_effect_ptr dw ; Cycles through the table of raster effects.
@@ -170,12 +166,14 @@
 .ends
 ;
 .bank 1 slot 1
-  ; Stuff in bank 1 goes here...
-  ;
-.bank 2 slot 2
 ; -----------------------------------------------------------------------------
 .section "Raster Tables" free
 ; -----------------------------------------------------------------------------
+  .equ ONE_ROW 7
+  .equ RASTER_INTERRUPT_VALUE ONE_ROW
+  .equ SLICE_POINT_1 5                  ; Screen layout -  trooper slice.
+  .equ SLICE_POINT_2 10                 ; - start of shield slice.
+  .equ SLICE_POINT_3 13                 ; - end of shield slice (reset scroll).
   .equ ALIGN_SLICES 1     ; Alien movement - align trooper and shield slices.
   .equ SKEW_SLICES 0      ; Alien movement - skew the slices.
   .equ SKEW_VALUE 8       ; Amount of pixel to skew the slices.
@@ -250,3 +248,5 @@
     .include "MockupAssets.inc"
   MockupAssetsEnd:
 .ends
+
+.bank 2 slot 2
