@@ -20,7 +20,7 @@
 0000:c004 raster_timer
 0000:0071 SetupMain
 0000:00ba Main
-0000:00fc SkipRasterMetaTablePointerUpdate
+0000:00fc skip_raster_update
 0000:00ff raster_handle_interrupt
 0002:9090 raster_meta_table
 0002:9180 raster_meta_table_end

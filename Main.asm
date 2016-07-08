@@ -115,7 +115,7 @@
     dec (hl)
     ld a,(raster_timer)
     or a
-    jp nz,SkipRasterMetaTablePointerUpdate
+    jp nz,skip_raster_update
       ; Time to update the raster meta table pointer. First set the timer.
       ld a,RASTER_TIMER_INTERVAL
       ld (raster_timer),a
@@ -137,7 +137,7 @@
         ld hl,raster_meta_table
         ld (raster_meta_effect_ptr),hl
       +:
-    SkipRasterMetaTablePointerUpdate:
+    skip_raster_update:
     ;
   jp Main
   ;
@@ -159,7 +159,7 @@
     ld b,HORIZONTAL_SCROLL_REGISTER ; horizontal scroll register to the given
     call SetRegister                ; value.
     inc hl                          ; Finish by incrementing the pointer and
-    ld (raster_effect_ptr),hl     ; loading it back into memory. Now it is
+    ld (raster_effect_ptr),hl       ; loading it back into memory. Now it is
   ret                               ; pointing at the next slicepoint...
 .ends
 ;
