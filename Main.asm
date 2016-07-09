@@ -50,6 +50,8 @@
 ;
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Main variables" slot 3
+  HScroll db
+  VScroll db
 .ends
 .bank 0 slot 0
 ; -----------------------------------------------------------------------------
@@ -72,7 +74,12 @@
   ;
   Main:
     call AwaitFrameInterrupt
-    ;
+    ld a,(VScroll)
+    ld b,VERTICAL_SCROLL_REGISTER
+    call SetRegister
+    ld a,(HScroll)
+    ld b,HORIZONTAL_SCROLL_REGISTER
+    call SetRegister
     ; Non-vblank stuff below this line...
     ;
     ;
