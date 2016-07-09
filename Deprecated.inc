@@ -32,3 +32,23 @@
   +:
   ld (_INDEX),a
 .endm
+
+; -----------------------------------------------------------------------------
+.macro MATCH_WORDS ARGS _VARIABLE, _VALUE
+; -----------------------------------------------------------------------------
+  ; Match the contents of a 16-bit variable (_VARIABLE) with a given 16-bit
+  ; value (_VALUE). If the words match then set carry. Else reset carry. Used
+  ; to see if the Raster.MetaPtr points beyond the end of the meta table.
+  or a              ; Clear carry so it does not interfere with sbc below.
+  ld hl,_VARIABLE
+  ld a,(hl)
+  inc hl
+  ld h,(hl)
+  ld l,a
+  ld de,_VALUE
+  sbc hl,de
+  scf
+  jp z,+
+    or a
+  +:
+.endm
