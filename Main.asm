@@ -1,6 +1,6 @@
 .include "Base.inc"
 ; Definitions for raster effects
-.equ RASTER_TIMER_INTERVAL 45           ; How many frames between each move?
+.equ VSCROLL_INIT_VALUE $df           
 ; -----------------------------------------------------------------------------
 .macro LOAD_IMAGE
 ; -----------------------------------------------------------------------------
@@ -40,7 +40,7 @@
     ld (VDPStatus),a
     bit 7,a
     jp nz,+
-      call raster_handle_interrupt
+      call handle_raster_interrupt
     +:
   exx
   pop af
@@ -58,6 +58,8 @@
 .section "Main" free
 ; -----------------------------------------------------------------------------
   SetupMain:
+    ld a,VSCROLL_INIT_VALUE
+    ld (VScroll),a
     ;
     LOAD_IMAGE MockupAssets,MockupAssetsEnd
     ;
@@ -66,6 +68,9 @@
     call SetRegister
     ld a,ENABLE_DISPLAY_ENABLE_FRAME_INTERRUPTS_NORMAL_SPRITES
     ld b,1
+    call SetRegister
+    ld a,7
+    ld b,RASTER_INTERRUPT_REGISTER
     call SetRegister
     ; Skip an interrupt to make sure that we start main at vblank.
     ei
@@ -80,13 +85,39 @@
     ld a,(HScroll)
     ld b,HORIZONTAL_SCROLL_REGISTER
     call SetRegister
+    ;
     ; Non-vblank stuff below this line...
     ;
-    ;
+    call GetInputPorts
+    call IsPlayer1UpPressed
+    jp nc,+
+      ld hl,VScroll
+      inc (hl)
+    +:
+    call IsPlayer1DownPressed
+    jp nc,+
+      ld hl,VScroll
+      dec (hl)
+    +:
+    call IsPlayer1LeftPressed
+    jp nc,+
+      ld hl,HScroll
+      dec (hl)
+    +:
+    call IsPlayer1RightPressed
+    jp nc,+
+      ld hl,HScroll
+      inc (hl)
+    +:
   jp Main
   ;
-  raster_handle_interrupt:
+  handle_raster_interrupt:
     in a,(V_COUNTER_PORT)
+    cp 127
+    ret nz
+    xor a
+    ld b,VERTICAL_SCROLL_REGISTER
+    call SetRegister
   ret                               ; pointing at the next slicepoint...
 .ends
 ;
