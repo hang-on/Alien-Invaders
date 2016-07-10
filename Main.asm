@@ -1,6 +1,6 @@
 .include "Base.inc"
 ; Definitions for raster effects
-.equ VSCROLL_INIT_VALUE $df           
+.equ VSCROLL_INIT_VALUE $df
 ; -----------------------------------------------------------------------------
 .macro LOAD_IMAGE
 ; -----------------------------------------------------------------------------
@@ -89,25 +89,12 @@
     ; Non-vblank stuff below this line...
     ;
     call GetInputPorts
-    call IsPlayer1UpPressed
-    jp nc,+
-      ld hl,VScroll
-      inc (hl)
-    +:
     call IsPlayer1DownPressed
     jp nc,+
       ld hl,VScroll
-      dec (hl)
-    +:
-    call IsPlayer1LeftPressed
-    jp nc,+
-      ld hl,HScroll
-      dec (hl)
-    +:
-    call IsPlayer1RightPressed
-    jp nc,+
-      ld hl,HScroll
-      inc (hl)
+      .rept 8
+        dec (hl)
+      .endr
     +:
   jp Main
   ;
