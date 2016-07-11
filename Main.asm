@@ -64,15 +64,8 @@
     ;
     LOAD_IMAGE MockupAssets,MockupAssetsEnd
     ;
-    ld a,FULL_SCROLL_BLANK_LEFT_COLUMN_KEEP_SPRITES_ENABLE_RASTER_INT
-    ld b,0
-    call SetRegister
-    ld a,ENABLE_DISPLAY_ENABLE_FRAME_INTERRUPTS_NORMAL_SPRITES
-    ld b,1
-    call SetRegister
-    ld a,7
-    ld b,RASTER_INTERRUPT_REGISTER
-    call SetRegister
+    ld hl,register_data
+    call load_vdp_registers
     ; Skip an interrupt to make sure that we start main at vblank.
     ei
     call AwaitFrameInterrupt
@@ -98,11 +91,13 @@
   ; ----------------------
   handle_raster_interrupt:
   ; ----------------------
+    ; FIXME: Doing nothing at the moment. Can control horizontal scrolling.
     in a,(V_COUNTER_PORT)
-  ret                               
+  ret
   ; -----------------
   load_vdp_registers:
   ; -----------------
+    ; Load all 11 vdp registers with preset values.
     ; Entry: HL pointing to init data block (11 bytes).
     xor b
     -:
