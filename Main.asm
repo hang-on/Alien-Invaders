@@ -64,8 +64,8 @@
   SetupMain:
     ld a,VSCROLL_INIT_VALUE
     ld (vertical_scroll),a
-    ld a,TIMER_INIT_VALUE
-    ld (timer),a
+    ;
+    call initialize_timer
     ;
     LOAD_IMAGE MockupAssets,MockupAssetsEnd
     ;
@@ -84,22 +84,34 @@
     ;
     ; Non-vblank stuff below this line...
     ;
-    ld a,(timer)
-    or a
-    jp nz,+
-      ld a,TIMER_INIT_VALUE
-      ld (timer),a
-      jp end_timer
-      +:
-      dec a
-      ld (timer),a
-    end_timer:
+    call handle_timer
   jp Main
+  ;
   ; ----------------------
   handle_raster_interrupt:
   ; ----------------------
     ; FIXME: Doing nothing at the moment. Can control horizontal scrolling.
     in a,(V_COUNTER_PORT)
+  ret
+  ; -----------
+  handle_timer:
+  ; -----------
+    ; If the timer is zero then initialize it, else decrement it.
+    ld a,(timer)
+    or a
+    jp nz,+
+      call initialize_timer
+      ret
+    +:
+    dec a
+    ld (timer),a
+  ret
+  ; ---------------
+  initialize_timer:
+  ; ---------------
+    ; Load the init value into the timer variable.
+    ld a,TIMER_INIT_VALUE
+    ld (timer),a
   ret
   ; -----------------
   load_vdp_registers:
