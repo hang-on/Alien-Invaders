@@ -1,7 +1,9 @@
 .include "Base.inc"
 ;
 .equ VSCROLL_INIT_VALUE $df
+.equ TIMER_INIT_VALUE 120
 .equ RASTER_INT_VALUE 7
+
 ;
 ; -----------------------------------------------------------------------------
 .macro LOAD_IMAGE
@@ -52,7 +54,8 @@
 ;
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Main variables" slot 3
-  VScroll db
+  vertical_scroll db
+  timer db
 .ends
 .bank 0 slot 0
 ; -----------------------------------------------------------------------------
@@ -60,7 +63,9 @@
 ; -----------------------------------------------------------------------------
   SetupMain:
     ld a,VSCROLL_INIT_VALUE
-    ld (VScroll),a
+    ld (vertical_scroll),a
+    ld a,TIMER_INIT_VALUE
+    ld (timer),a
     ;
     LOAD_IMAGE MockupAssets,MockupAssetsEnd
     ;
@@ -73,20 +78,22 @@
   ;
   Main:
     call AwaitFrameInterrupt
-    ld a,(VScroll)
+    ld a,(vertical_scroll)
     ld b,VERTICAL_SCROLL_REGISTER
     call SetRegister
     ;
     ; Non-vblank stuff below this line...
     ;
-    call GetInputPorts
-    call IsPlayer1DownPressed
-    jp nc,+
-      ld hl,VScroll
-      .rept 8
-        dec (hl)
-      .endr
-    +:
+    ld a,(timer)
+    or a
+    jp nz,+
+      ld a,TIMER_INIT_VALUE
+      ld (timer),a
+      jp end_timer
+      +:
+      dec a
+      ld (timer),a
+    end_timer:
   jp Main
   ; ----------------------
   handle_raster_interrupt:
