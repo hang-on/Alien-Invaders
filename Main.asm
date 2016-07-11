@@ -1,6 +1,8 @@
 .include "Base.inc"
-; Definitions for raster effects
+;
 .equ VSCROLL_INIT_VALUE $df
+.equ RASTER_INT_VALUE 7
+;
 ; -----------------------------------------------------------------------------
 .macro LOAD_IMAGE
 ; -----------------------------------------------------------------------------
@@ -50,7 +52,6 @@
 ;
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Main variables" slot 3
-  HScroll db
   VScroll db
 .ends
 .bank 0 slot 0
@@ -82,9 +83,6 @@
     ld a,(VScroll)
     ld b,VERTICAL_SCROLL_REGISTER
     call SetRegister
-    ld a,(HScroll)
-    ld b,HORIZONTAL_SCROLL_REGISTER
-    call SetRegister
     ;
     ; Non-vblank stuff below this line...
     ;
@@ -97,25 +95,43 @@
       .endr
     +:
   jp Main
-  ;
+  ; ----------------------
   handle_raster_interrupt:
+  ; ----------------------
     in a,(V_COUNTER_PORT)
-    cp 127
-    ret nz
-    xor a
-    ld b,VERTICAL_SCROLL_REGISTER
-    call SetRegister
-  ret                               ; pointing at the next slicepoint...
+  ret                               
+  ; -----------------
+  load_vdp_registers:
+  ; -----------------
+    ; Entry: HL pointing to init data block (11 bytes).
+    xor b
+    -:
+      ld a,(hl)
+      out (CONTROL_PORT),a
+      inc hl
+      ld a,b
+      or REGISTER_WRITE_COMMAND
+      out (CONTROL_PORT),a
+      cp REGISTER_WRITE_COMMAND|10
+      ret z
+      inc b
+    jr -
+  ret
 .ends
 ;
 .bank 1 slot 1
-;
 ; -----------------------------------------------------------------------------
 .section "Mockup Assets" free
 ; -----------------------------------------------------------------------------
   MockupAssets:
     .include "MockupAssets.inc"
   MockupAssetsEnd:
+  ;
+  register_data:
+    .db FULL_SCROLL_BLANK_LEFT_COLUMN_KEEP_SPRITES_ENABLE_RASTER_INT
+    .db ENABLE_DISPLAY_ENABLE_FRAME_INTERRUPTS_NORMAL_SPRITES
+    .db $ff,$ff,$ff,$ff,$ff,$00,$00,$00,RASTER_INT_VALUE
+
 .ends
 ;
 .bank 2 slot 2
