@@ -1,0 +1,6 @@
+1. Try to break the code down into agents and active structures: Handlers,
+   controllers, loaders, timers, etc.
+2. Let these structures have init_ functions to initialize vars etc.
+3. Pass arguments to these functions. Try not to have built-in data. It seems
+   to be something about keeping names/data on the same level.
+4. Have well.defined functions. Give clear names to these functions.

@@ -3,7 +3,6 @@
 .equ VSCROLL_INIT_VALUE $df
 .equ TIMER_INIT_VALUE 120
 .equ RASTER_INIT_VALUE 7
-
 ;
 ; -----------------------------------------------------------------------------
 .macro LOAD_IMAGE
@@ -150,7 +149,6 @@
     .db FULL_SCROLL_BLANK_LEFT_COLUMN_KEEP_SPRITES_ENABLE_RASTER_INT
     .db ENABLE_DISPLAY_ENABLE_FRAME_INTERRUPTS_NORMAL_SPRITES
     .db $ff,$ff,$ff,$ff,$ff,$00,$00,VSCROLL_INIT_VALUE,RASTER_INIT_VALUE
-
 .ends
 ;
 .bank 2 slot 2
