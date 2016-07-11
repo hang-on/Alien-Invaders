@@ -2,7 +2,7 @@
 ;
 .equ VSCROLL_INIT_VALUE $df
 .equ TIMER_INIT_VALUE 120
-.equ RASTER_INT_VALUE 7
+.equ RASTER_INIT_VALUE 7
 
 ;
 ; -----------------------------------------------------------------------------
@@ -63,8 +63,9 @@
 ; -----------------------------------------------------------------------------
   SetupMain:
     ld a,VSCROLL_INIT_VALUE
-    ld (vertical_scroll),a
+    call initialize_vs_controller
     ;
+    ld a,TIMER_INIT_VALUE
     call initialize_timer
     ;
     LOAD_IMAGE MockupAssets,MockupAssetsEnd
@@ -87,35 +88,39 @@
     call handle_timer
   jp Main
   ;
-  ; ----------------------
+  ; ---------------------------------------------------------------------------
   handle_raster_interrupt:
-  ; ----------------------
     ; FIXME: Doing nothing at the moment. Can control horizontal scrolling.
     in a,(V_COUNTER_PORT)
   ret
-  ; -----------
+  ; ---------------------------------------------------------------------------
   handle_timer:
-  ; -----------
     ; If the timer is zero then initialize it, else decrement it.
     ld a,(timer)
     or a
     jp nz,+
+      ld a,TIMER_INIT_VALUE
       call initialize_timer
       ret
     +:
     dec a
     ld (timer),a
   ret
-  ; ---------------
+  ; ---------------------------------------------------------------------------
+  initialize_vs_controller:
+    ; Initialize the vertical scroll controller.
+    ; Load the init value into the vertical scroll register.
+    ; Entry: A = Init value for the vertical scroll register.
+    ld (vertical_scroll),a
+  ret
+  ; ---------------------------------------------------------------------------
   initialize_timer:
-  ; ---------------
     ; Load the init value into the timer variable.
-    ld a,TIMER_INIT_VALUE
+    ; Entry: A = Timer init value
     ld (timer),a
   ret
-  ; -----------------
+  ; ---------------------------------------------------------------------------
   load_vdp_registers:
-  ; -----------------
     ; Load all 11 vdp registers with preset values.
     ; Entry: HL pointing to init data block (11 bytes).
     xor b
@@ -144,7 +149,7 @@
   register_data:
     .db FULL_SCROLL_BLANK_LEFT_COLUMN_KEEP_SPRITES_ENABLE_RASTER_INT
     .db ENABLE_DISPLAY_ENABLE_FRAME_INTERRUPTS_NORMAL_SPRITES
-    .db $ff,$ff,$ff,$ff,$ff,$00,$00,$00,RASTER_INT_VALUE
+    .db $ff,$ff,$ff,$ff,$ff,$00,$00,VSCROLL_INIT_VALUE,RASTER_INIT_VALUE
 
 .ends
 ;
