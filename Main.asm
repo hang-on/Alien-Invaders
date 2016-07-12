@@ -6,7 +6,9 @@
 .equ VERTICAL_SCROLL_LIMIT 183
 .equ TIMER_INIT_VALUE 120
 .equ RASTER_INIT_VALUE 7
-.equ BASE_SIZE 5*3              ; 5 chars wide, 3 chars high.
+.equ BASE_WIDTH 5
+.equ BASE_HEIGHT 3
+.equ CENTER_BASE_FIRST_TILE $3c5c
 ;
 .bank 0 slot 0
 .org $0038
@@ -31,7 +33,7 @@
 .ramsection "Main variables" slot 3
   vertical_scroll_value db
   vertical_scroll_timer db
-  base_buffer dsb BASE_SIZE*2   ; X 2 because we are storing name table words.
+  base_buffer dsb BASE_WIDTH*BASE_HEIGHT*2   ; * 2 = name table words.
 .ends
 .bank 0 slot 0
 ; -----------------------------------------------------------------------------
