@@ -47,26 +47,12 @@
     ld (vertical_scroll_timer),a
     ;
     LOAD_IMAGE MockupAssets,MockupAssetsEnd
-    ;
-    .endasm
-    ld hl,CENTER_BASE_FIRST_TILE
-    ld de,base_buffer
-    ld bc,BASE_WIDTH*2
-    call ReadVRam
-    ld hl,CENTER_BASE_FIRST_TILE+(32*2)
-    ld de,base_buffer+10
-    ld bc,BASE_WIDTH*2
-    call ReadVRam
-    ld hl,CENTER_BASE_FIRST_TILE+(62*2)
-    ld de,base_buffer+20
-    ld bc,BASE_WIDTH*2
-    call ReadVRam
-    .asm
+    ; Load player base tiles from vram tilemap to buffer.
     ld a,BASE_WIDTH*BASE_HEIGHT
     ld hl,base_tilemap_table
     ld de,base_buffer
     call tilemap_to_buffer
-
+    ;
     ; Turn on screen, etc.
     ld hl,register_data
     call load_vdp_registers
@@ -112,6 +98,7 @@
 .section "Mockup Assets" free
 ; -----------------------------------------------------------------------------
   base_tilemap_table:
+    ; Note: Check BASE_WIDTH and BASE_HEIGHT.
     .dw CENTER_BASE_FIRST_TILE,
     .dw CENTER_BASE_FIRST_TILE+2
     .dw CENTER_BASE_FIRST_TILE+4
