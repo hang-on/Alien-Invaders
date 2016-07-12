@@ -48,7 +48,10 @@
     ;
     LOAD_IMAGE MockupAssets,MockupAssetsEnd
     ;
-
+    ld hl,CENTER_BASE_FIRST_TILE
+    ld de,base_buffer
+    ld bc,BASE_WIDTH*2
+    call ReadVRam
     ; Turn on screen, etc.
     ld hl,register_data
     call load_vdp_registers
