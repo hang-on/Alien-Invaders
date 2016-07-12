@@ -26,9 +26,9 @@
 ;
 .bank 0 slot 0
 ; -----------------------------------------------------------------------------
-.section "Main" free
+.section "main" free
 ; -----------------------------------------------------------------------------
-  SetupMain:
+  setup_main:
     ld a,VSCROLL_INIT_VALUE
     call initialize_vs_controller
     ;
@@ -42,16 +42,16 @@
     ; Skip an interrupt to make sure that we start main at vblank.
     ei
     call AwaitFrameInterrupt
-  jp Main
+  jp main
   ;
-  Main:
+  main:
     call AwaitFrameInterrupt
     call handle_vs_controller
     ;
     ; Non-vblank stuff below this line...
     ;
     call handle_timer
-  jp Main
+  jp main
 .ends
 ;
 .bank 1 slot 1

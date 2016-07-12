@@ -105,7 +105,7 @@
   call ClearRam ; Except the top (stack, slot/bank registers, etc.)
   call ClearVRam
   call InitializeVDPRegisters
-  jp SetupMain
+  jp setup_main
 
   _MapperInitData:
     .db $00,$00,$01,$02

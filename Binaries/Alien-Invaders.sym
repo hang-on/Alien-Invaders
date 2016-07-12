@@ -23,8 +23,8 @@
 0000:00d4 initialize_vs_controller
 0000:00d8 initialize_timer
 0000:00dc load_vdp_registers
-0000:0071 SetupMain
-0000:00aa Main
+0000:0071 setup_main
+0000:00aa main
 0001:4000 MockupAssets
 0001:4000 MockupPalette
 0001:4010 MockupTilemap
