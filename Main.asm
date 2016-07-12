@@ -48,10 +48,25 @@
     ;
     LOAD_IMAGE MockupAssets,MockupAssetsEnd
     ;
+    .endasm
     ld hl,CENTER_BASE_FIRST_TILE
     ld de,base_buffer
     ld bc,BASE_WIDTH*2
     call ReadVRam
+    ld hl,CENTER_BASE_FIRST_TILE+(32*2)
+    ld de,base_buffer+10
+    ld bc,BASE_WIDTH*2
+    call ReadVRam
+    ld hl,CENTER_BASE_FIRST_TILE+(62*2)
+    ld de,base_buffer+20
+    ld bc,BASE_WIDTH*2
+    call ReadVRam
+    .asm
+    ld a,BASE_WIDTH*BASE_HEIGHT
+    ld hl,base_tilemap_table
+    ld de,base_buffer
+    call tilemap_to_buffer
+
     ; Turn on screen, etc.
     ld hl,register_data
     call load_vdp_registers
@@ -96,6 +111,25 @@
 ; -----------------------------------------------------------------------------
 .section "Mockup Assets" free
 ; -----------------------------------------------------------------------------
+  base_tilemap_table:
+    .dw CENTER_BASE_FIRST_TILE,
+    .dw CENTER_BASE_FIRST_TILE+2
+    .dw CENTER_BASE_FIRST_TILE+4
+    .dw CENTER_BASE_FIRST_TILE+6
+    .dw CENTER_BASE_FIRST_TILE+8
+    ;
+    .dw CENTER_BASE_FIRST_TILE+(32*2)
+    .dw CENTER_BASE_FIRST_TILE+2+(32*2)
+    .dw CENTER_BASE_FIRST_TILE+4+(32*2)
+    .dw CENTER_BASE_FIRST_TILE+6+(32*2)
+    .dw CENTER_BASE_FIRST_TILE+8+(32*2)
+    ;
+    .dw CENTER_BASE_FIRST_TILE+(62*2)
+    .dw CENTER_BASE_FIRST_TILE+2+(62*2)
+    .dw CENTER_BASE_FIRST_TILE+4+(62*2)
+    .dw CENTER_BASE_FIRST_TILE+6+(62*2)
+    .dw CENTER_BASE_FIRST_TILE+8+(62*2)
+    ;
   MockupAssets:
     .include "MockupAssets.inc"
   MockupAssetsEnd:
