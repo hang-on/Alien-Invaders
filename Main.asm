@@ -58,12 +58,12 @@
     ;
     ; Non-vblank stuff below this line...
     ;
-    ; Handle vertical_scroll_timer.
     ld a,(vertical_scroll_timer)      ; Get vertical_scroll_timer.
     or a                              ; Is it zero?
     jp nz,+
       ld a,TIMER_INIT_VALUE           ; Yes - load init value.
       ld (vertical_scroll_timer),a    ;
+      ; FIXME: Scroll stuff happens here!
       jp ++                           ;
     +:                                ; No - decrement timer.
       dec a                           ;
