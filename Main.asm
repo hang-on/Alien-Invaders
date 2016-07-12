@@ -24,16 +24,21 @@
   reti
 .ends
 ;
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+.ramsection "Main variables" slot 3
+  vertical_scroll_value db
+  vertical_scroll_timer db
+.ends
 .bank 0 slot 0
 ; -----------------------------------------------------------------------------
 .section "main" free
 ; -----------------------------------------------------------------------------
   setup_main:
     ld a,VSCROLL_INIT_VALUE
-    call initialize_vs_controller
+    ld (vertical_scroll_value),a
     ;
     ld a,TIMER_INIT_VALUE
-    call initialize_timer
+    ld (vertical_scroll_timer),a
     ;
     LOAD_IMAGE MockupAssets,MockupAssetsEnd
     ;
@@ -46,11 +51,25 @@
   ;
   main:
     call AwaitFrameInterrupt
-    call handle_vs_controller
+    ;
+    ld a,(vertical_scroll_value)
+    ld b,VERTICAL_SCROLL_REGISTER
+    call SetRegister
     ;
     ; Non-vblank stuff below this line...
     ;
-    call handle_timer
+    ; Handle vertical_scroll_timer.
+    ld a,(vertical_scroll_timer)      ; Get vertical_scroll_timer.
+    or a                              ; Is it zero?
+    jp nz,+
+      ld a,TIMER_INIT_VALUE           ; Yes - load init value.
+      ld (vertical_scroll_timer),a    ;
+      jp ++                           ;
+    +:                                ; No - decrement timer.
+      dec a                           ;
+      ld (vertical_scroll_timer),a    ;
+    ++:                               ; End of vertical_scroll_timer handler.
+    ;
   jp main
 .ends
 ;

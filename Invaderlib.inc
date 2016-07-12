@@ -28,51 +28,12 @@
   ld hl,\1+16+NAME_TABLE_SIZE
   call LoadVRam
 .endm
-; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-.ramsection "Invaderlib variables" slot 3
-  vertical_scroll db
-  timer db
-.ends
 ; -----------------------------------------------------------------------------
 .section "Invaderlib functions" free
 ; -----------------------------------------------------------------------------
   handle_raster_interrupt:
     ; FIXME: Doing nothing at the moment. Can control horizontal scrolling.
     in a,(V_COUNTER_PORT)
-  ret
-  ; ---------------------------------------------------------------------------
-  handle_vs_controller:
-    ; NOTE: Add test for vertical_scroll within range?
-    ; Load vertical scroll register.
-    ld a,(vertical_scroll)
-    ld b,VERTICAL_SCROLL_REGISTER
-    call SetRegister
-  ret
-  ; ---------------------------------------------------------------------------
-  handle_timer:
-    ; If the timer is zero then initialize it, else decrement it.
-    ld a,(timer)
-    or a
-    jp nz,+
-      ld a,TIMER_INIT_VALUE
-      call initialize_timer
-      ret
-    +:
-    dec a
-    ld (timer),a
-  ret
-  ; ---------------------------------------------------------------------------
-  initialize_vs_controller:
-    ; Initialize the vertical scroll controller.
-    ; Load the init value into the vertical scroll register.
-    ; Entry: A = Init value for the vertical scroll register.
-    ld (vertical_scroll),a
-  ret
-  ; ---------------------------------------------------------------------------
-  initialize_timer:
-    ; Load the init value into the timer variable.
-    ; Entry: A = Timer init value
-    ld (timer),a
   ret
   ; ---------------------------------------------------------------------------
   load_vdp_registers:
