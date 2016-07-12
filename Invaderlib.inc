@@ -42,6 +42,8 @@
   ret
   ; ---------------------------------------------------------------------------
   handle_vs_controller:
+    ; NOTE: Add test for vertical_scroll within range?
+    ; Load vertical scroll register.
     ld a,(vertical_scroll)
     ld b,VERTICAL_SCROLL_REGISTER
     call SetRegister
