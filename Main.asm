@@ -1,7 +1,7 @@
 .include "Base.inc"
 .include "Invaderlib.inc"
 ;
-.equ VSCROLL_INIT_VALUE $df
+.equ VSCROLL_INIT_VALUE 223
 .equ TIMER_INIT_VALUE 120
 .equ RASTER_INIT_VALUE 7
 ;
@@ -60,15 +60,21 @@
     ;
     ld a,(vertical_scroll_timer)      ; Get vertical_scroll_timer.
     or a                              ; Is it zero?
-    jp nz,+
+    jp nz,decrement_timer
       ld a,TIMER_INIT_VALUE           ; Yes - load init value.
       ld (vertical_scroll_timer),a    ;
-      ; FIXME: Scroll stuff happens here!
-      jp ++                           ;
-    +:                                ; No - decrement timer.
+      ld a,(vertical_scroll_value)
+      sub 8
+      cp 183
+      jp nz,+
+        ld a,VSCROLL_INIT_VALUE
+      +:
+      ld (vertical_scroll_value),a
+      jp vertical_scroll_end                           ;
+    decrement_timer:                  ; No - decrement timer.
       dec a                           ;
       ld (vertical_scroll_timer),a    ;
-    ++:                               ; End of vertical_scroll_timer handler.
+    vertical_scroll_end:
     ;
   jp main
 .ends
