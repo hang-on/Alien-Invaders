@@ -7,7 +7,7 @@
 .equ TIMER_INIT_VALUE 120
 .equ RASTER_INIT_VALUE 7
 .equ BASE_WIDTH 5
-.equ BASE_HEIGHT 3
+.equ BASE_HEIGHT 4
 .equ CENTER_BASE_FIRST_TILE $3c5c
 .equ ONE_TILEMAP_ROW 32*2
 ;
@@ -96,11 +96,12 @@
       sub VERTICAL_SCROLL_STEP
       cp VERTICAL_SCROLL_LIMIT
       jp nz,+
-        ld a,VSCROLL_INIT_VALUE
-        ld (vertical_scroll_value),a
-        ld hl,CENTER_BASE_FIRST_TILE
-        ld (center_base_address),hl
-        jp vertical_scroll_end
+        ; Restart program.
+        ld a,DISABLE_DISPLAY_DISABLE_FRAME_INTERRUPTS_NORMAL_SPRITES
+        ld b,1
+        call SetRegister
+        jp 0
+        ;
       +:
       ld (vertical_scroll_value),a
       ld hl,(center_base_address)
