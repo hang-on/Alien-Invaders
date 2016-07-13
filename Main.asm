@@ -10,6 +10,8 @@
 .equ BASE_HEIGHT 3
 .equ CENTER_BASE_FIRST_TILE $3c5c
 .equ ONE_TILEMAP_ROW 32*2
+.equ ENABLED 1
+.equ DISABLED 0
 ;
 .bank 0 slot 0
 .org $0038
@@ -32,6 +34,7 @@
 ;
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Main variables" slot 3
+  vertical_scroll_status db
   vertical_scroll_value db
   vertical_scroll_timer db
   base_buffer dsb BASE_WIDTH*((BASE_HEIGHT+1)*2)  ; * 2 = name table words.
@@ -48,6 +51,9 @@
     ;
     ld a,TIMER_INIT_VALUE
     ld (vertical_scroll_timer),a
+    ;
+    ld a,ENABLED
+    ld (vertical_scroll_status),a
     ;
     ld hl,CENTER_BASE_FIRST_TILE
     ld (center_base_address),hl
