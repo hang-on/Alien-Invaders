@@ -59,6 +59,12 @@
     ld a,BASE_WIDTH
     ld b,BASE_HEIGHT
     call blank_tilemap_rect
+    ; Test: Write the center base again.
+    ld a,BASE_WIDTH
+    ld b,BASE_HEIGHT
+    ld hl,base_buffer
+    ld de,CENTER_BASE_FIRST_TILE
+    call copy_buffer_to_tilemap_rect
     ; Turn on screen, etc.
     ld hl,register_data
     call load_vdp_registers
