@@ -32,8 +32,27 @@
 .section "Invaderlib functions" free
 ; -----------------------------------------------------------------------------
   handle_raster_interrupt:
-    ; FIXME: Doing nothing at the moment. Can control horizontal scrolling.
+    ;
     in a,(V_COUNTER_PORT)
+    cp 8*10
+    jp nc,+
+      ld a,8
+      ld b,HORIZONTAL_SCROLL_REGISTER
+      call SetRegister
+      jp hscroll_end
+    +:
+    cp 8*12
+    jp nc,+
+      ld a,-8
+      ld b,HORIZONTAL_SCROLL_REGISTER
+      call SetRegister
+      jp hscroll_end
+    +:
+    ld a,0
+    ld b,HORIZONTAL_SCROLL_REGISTER
+    call SetRegister
+    jp hscroll_end
+    hscroll_end:
   ret
   ; ---------------------------------------------------------------------------
   load_vdp_registers:
