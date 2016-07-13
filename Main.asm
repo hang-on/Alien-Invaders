@@ -54,7 +54,11 @@
     ld hl,base_tilemap_table
     ld de,base_buffer
     call copy_tilemap_rect_to_buffer
-    ;
+    ; Blank the center base.
+    ld hl,CENTER_BASE_FIRST_TILE
+    ld a,BASE_WIDTH
+    ld b,BASE_HEIGHT
+    call blank_tilemap_rect
     ; Turn on screen, etc.
     ld hl,register_data
     call load_vdp_registers
