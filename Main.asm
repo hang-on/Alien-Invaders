@@ -51,7 +51,7 @@
     ; Load player base tiles from vram tilemap to buffer.
     ld a,BASE_WIDTH
     ld b,BASE_HEIGHT
-    ld hl,base_tilemap_table
+    ld hl,CENTER_BASE_FIRST_TILE
     ld de,base_buffer
     call copy_tilemap_rect_to_buffer
     ; Blank the center base.
@@ -103,11 +103,6 @@
 ; -----------------------------------------------------------------------------
 .section "Mockup Assets" free
 ; -----------------------------------------------------------------------------
-  base_tilemap_table:
-    .dw CENTER_BASE_FIRST_TILE,
-    .dw CENTER_BASE_FIRST_TILE+ONE_TILEMAP_ROW
-    .dw CENTER_BASE_FIRST_TILE+(ONE_TILEMAP_ROW*2)
-
   MockupAssets:
     .include "MockupAssets.inc"
   MockupAssetsEnd:

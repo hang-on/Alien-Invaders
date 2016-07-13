@@ -57,27 +57,21 @@
     ; Copy the tilemap words under a rectangle to a buffer.
     ; A = Rect width.
     ; B = Rect height.
-    ; HL = Table of tilemap addresses.
+    ;
     ; DE = Destination buffer.
     add a,a                 ; Double width - the table elements are words.
     ld c,a                  ; Save width in C for counting.
     ; For each 'rect-height' do the following...
     --:
-      push hl               ; Save table pointer.
-        ; Convert HL from pointer to word pointed to.
-        ld a,(hl)
-        inc hl
-        ld h,(hl)
-        ld l,a
-        ; Read one word into buffer and update both pointers.
-        ld a,l
-        out (CONTROL_PORT),a
-        ld a,h
-        or VRAM_READ_COMMAND
-        out (CONTROL_PORT),a
-      pop hl                ; Restore table pointer.
-      inc hl                ; Point to next table element.
-      inc hl
+      ld a,l
+      out (CONTROL_PORT),a
+      ld a,h
+      or VRAM_READ_COMMAND
+      out (CONTROL_PORT),a
+      push de
+        ld de,ONE_TILEMAP_ROW
+        add hl,de
+      pop de
       push bc               ; Save rect width*2.
       ; For each 'rect-width*2' do the following...
         -:
@@ -119,4 +113,45 @@
       pop bc                ; Restore rect-width*2.
     djnz --                 ; The rect-height for-loop.
   ret
+
+  copy_buffer_to_tilemap_rect:
+    ; Copy words from a buffer to a rectangle on the tilemap. This function is
+    ; the reverse of copy_tilemap_rect_to_buffer.
+    ; A = Rect width.
+    ; B = Rect height.
+    ; HL = Base address of buffer.
+    ; DE = Destination on tilemap (top left tile).
+    add a,a                 ; Double width - the table elements are words.
+    ld c,a                  ; Save width in C for counting.
+    ; For each 'rect-height' do the following...
+    --:
+      push hl               ; Save table pointer.
+        ; Convert HL from pointer to word pointed to.
+        ld a,(hl)
+        inc hl
+        ld h,(hl)
+        ld l,a
+        ; Read one word into buffer and update both pointers.
+        ld a,l
+        out (CONTROL_PORT),a
+        ld a,h
+        or VRAM_READ_COMMAND
+        out (CONTROL_PORT),a
+      pop hl                ; Restore table pointer.
+      inc hl                ; Point to next table element.
+      inc hl
+      push bc               ; Save rect width*2.
+      ; For each 'rect-width*2' do the following...
+        -:
+          in a,(DATA_PORT)  ; Get byte from tilemap.
+          ld (de),a         ; Store it in the buffer.
+          inc de            ; Update buffer pointer.
+          dec c             ; Decrement 'for counter'.
+          xor a             ; Do the rect-width*2 for-loop logic...
+          cp c
+        jp nz,-
+      pop bc                ; Restore rect-width*2.
+    djnz --                 ; The rect-height for-loop.
+  ret
+
 .ends
