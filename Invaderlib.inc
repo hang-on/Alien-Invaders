@@ -91,5 +91,32 @@
       pop bc                ; Restore rect-width*2.
     djnz --                 ; The rect-height for-loop.
   ret
-
+  ; ---------------------------------------------------------------------------
+  blank_tilemap_rect:
+    ; Write $0000 to the tilemap words under a rectangle.
+    ; A = Rect width.
+    ; B = Rect height.
+    ; HL = Address of first tile to blank.
+    add a,a                 ; Double width - the table elements are words.
+    ld c,a                  ; Save width in C for counting.
+    ; For each 'rect-height' do the following...
+    --:
+      ld a,l
+      out (CONTROL_PORT),a
+      ld a,h
+      or VRAM_WRITE_COMMAND
+      out (CONTROL_PORT),a
+      ld de,ONE_TILEMAP_ROW
+      add hl,de
+      ld a,$00
+      push bc               ; Save rect width*2.
+      ; For each 'rect-width*2' do the following...
+        -:
+          out (DATA_PORT),a
+          dec c             ; Decrement 'for counter'.
+          cp c              ; A is already $00 = blanked.
+        jp nz,-
+      pop bc                ; Restore rect-width*2.
+    djnz --                 ; The rect-height for-loop.
+  ret
 .ends
