@@ -52,7 +52,7 @@
     ld a,TIMER_INIT_VALUE
     ld (vertical_scroll_timer),a
     ;
-    ld a,ENABLED
+    ld a,DISABLED
     ld (vertical_scroll_status),a
     ;
     ld hl,CENTER_BASE_FIRST_TILE
@@ -86,41 +86,44 @@
     call SetRegister
     ; Test: Write the center base
     ld a,BASE_WIDTH
-    ld b,BASE_HEIGHT+1
+    ld b,BASE_HEIGHT+1                ; +1 for the self-erasing trick.
     ld hl,base_buffer
     ld de,(center_base_address)
     call copy_buffer_to_tilemap_rect
     ;
     ; Non-vblank stuff below this line...
     ;
-    ld a,(vertical_scroll_timer)
-    or a
-    jp nz,decrement_timer
-      ; Time is up - handle scrolling.
-      ld a,TIMER_INIT_VALUE
-      ld (vertical_scroll_timer),a
-      ld a,(vertical_scroll_value)
-      sub VERTICAL_SCROLL_STEP
-      cp VERTICAL_SCROLL_LIMIT
-      jp nz,+
-        ; Restart program.
-        ld a,DISABLE_DISPLAY_DISABLE_FRAME_INTERRUPTS_NORMAL_SPRITES
-        ld b,1
-        call SetRegister
-        jp 0
+    ld a,(vertical_scroll_status)
+    cp DISABLED
+    jp z,vertical_scroll_end
+      ld a,(vertical_scroll_timer)
+      or a
+      jp nz,decrement_timer
+        ; Time is up - handle scrolling.
+        ld a,TIMER_INIT_VALUE
+        ld (vertical_scroll_timer),a
+        ld a,(vertical_scroll_value)
+        sub VERTICAL_SCROLL_STEP
+        cp VERTICAL_SCROLL_LIMIT
+        jp nz,+
+          ; Restart program.
+          ld a,DISABLE_DISPLAY_DISABLE_FRAME_INTERRUPTS_NORMAL_SPRITES
+          ld b,1
+          call SetRegister
+          jp 0
+          ;
+        +:
+        ld (vertical_scroll_value),a
+        ld hl,(center_base_address)
+        ld de,ONE_TILEMAP_ROW
+        sbc hl,de
+        ld (center_base_address),hl
         ;
-      +:
-      ld (vertical_scroll_value),a
-      ld hl,(center_base_address)
-      ld de,ONE_TILEMAP_ROW
-      sbc hl,de
-      ld (center_base_address),hl
-      ;
-      jp vertical_scroll_end                           ;
-    decrement_timer:
-      ; Not time for scrolling yet - just decrement the timer.
-      dec a
-      ld (vertical_scroll_timer),a
+        jp vertical_scroll_end                           ;
+      decrement_timer:
+        ; Not time for scrolling yet - just decrement the timer.
+        dec a
+        ld (vertical_scroll_timer),a
     vertical_scroll_end:
     ;
   jp main
