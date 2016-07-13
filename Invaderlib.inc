@@ -52,41 +52,44 @@
       inc b
     jr -
   ret
-  ;
-  tilemap_rect_to_buffer:
-    ; A = rect width
-    ; B = rect height
-    ; HL = table of tilemap addresses
+  ; ---------------------------------------------------------------------------
+  copy_tilemap_rect_to_buffer:
+    ; Copy the tilemap words under a rectangle to a buffer.
+    ; A = Rect width.
+    ; B = Rect height.
+    ; HL = Table of tilemap addresses.
     ; DE = Destination buffer.
-    add a,a
-    ld c,a
-    -:
-      push hl
-        ; convert HL from pointer to word pointed to...
+    add a,a                 ; Double width - the table elements are words.
+    ld c,a                  ; Save width in C for counting.
+    ; For each 'rect-height' do the following...
+    --:
+      push hl               ; Save table pointer.
+        ; Convert HL from pointer to word pointed to.
         ld a,(hl)
         inc hl
         ld h,(hl)
         ld l,a
-        ; Read one word into buffer and update both pointers
+        ; Read one word into buffer and update both pointers.
         ld a,l
         out (CONTROL_PORT),a
         ld a,h
         or VRAM_READ_COMMAND
         out (CONTROL_PORT),a
-      pop hl
-      push bc
-        read_loop:
-          in a,(DATA_PORT)
-          ld (de),a
-          inc de
-          dec c
-          xor a
+      pop hl                ; Restore table pointer.
+      inc hl                ; Point to next table element.
+      inc hl
+      push bc               ; Save rect width*2.
+      ; For each 'rect-width*2' do the following...
+        -:
+          in a,(DATA_PORT)  ; Get byte from tilemap.
+          ld (de),a         ; Store it in the buffer.
+          inc de            ; Update buffer pointer.
+          dec c             ; Decrement 'for counter'.
+          xor a             ; Do the rect-width*2 for-loop logic...
           cp c
-        jp nz,read_loop
-      pop bc
-      inc hl
-      inc hl
-    djnz -
+        jp nz,-
+      pop bc                ; Restore rect-width*2.
+    djnz --                 ; The rect-height for-loop.
   ret
 
 .ends

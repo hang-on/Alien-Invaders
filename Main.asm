@@ -9,6 +9,7 @@
 .equ BASE_WIDTH 5
 .equ BASE_HEIGHT 3
 .equ CENTER_BASE_FIRST_TILE $3c5c
+.equ ONE_TILEMAP_ROW 32*2
 ;
 .bank 0 slot 0
 .org $0038
@@ -48,15 +49,11 @@
     ;
     LOAD_IMAGE MockupAssets,MockupAssetsEnd
     ; Load player base tiles from vram tilemap to buffer.
-    ;ld a,BASE_WIDTH*BASE_HEIGHT
-    ;ld hl,base_tilemap_table
-    ;ld de,base_buffer
-    ;call tilemap_to_buffer
     ld a,BASE_WIDTH
     ld b,BASE_HEIGHT
-    ld hl,base_tilemap_table_2
+    ld hl,base_tilemap_table
     ld de,base_buffer
-    call tilemap_rect_to_buffer
+    call copy_tilemap_rect_to_buffer
     ;
     ; Turn on screen, etc.
     ld hl,register_data
@@ -102,10 +99,10 @@
 ; -----------------------------------------------------------------------------
 .section "Mockup Assets" free
 ; -----------------------------------------------------------------------------
-  base_tilemap_table_2:
+  base_tilemap_table:
     .dw CENTER_BASE_FIRST_TILE,
-    .dw CENTER_BASE_FIRST_TILE+(32*2)
-    .dw CENTER_BASE_FIRST_TILE+(62*2)
+    .dw CENTER_BASE_FIRST_TILE+ONE_TILEMAP_ROW
+    .dw CENTER_BASE_FIRST_TILE+(ONE_TILEMAP_ROW*2)
 
   MockupAssets:
     .include "MockupAssets.inc"
