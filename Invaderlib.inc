@@ -113,6 +113,40 @@
       pop bc                ; Restore rect-width*2.
     djnz --                 ; The rect-height for-loop.
   ret
+  ; ---------------------------------------------------------------------------
+  copy_buffer_to_tilemap_rect:
+    ;
+    ; A = Rect width.
+    ; B = Rect height.
+    ; HL = Base address of buffer.
+    ; DE = Address of top left tile of tilemap rectangle.
+    add a,a                 ; Double width - the table elements are words.
+    ld c,a                  ; Save width in C for counting.
+    ; For each 'rect-height' do the following...
+    --:
+      ld a,e
+      out (CONTROL_PORT),a
+      ld a,d
+      or VRAM_WRITE_COMMAND
+      out (CONTROL_PORT),a
+      push hl
+        ld hl,ONE_TILEMAP_ROW
+        add hl,de
+        ex de,hl
+      pop hl
+      push bc               ; Save rect width*2.
+      ; For each 'rect-width*2' do the following...
+        -:
+          ld a,(hl)
+          out (DATA_PORT),a
+          inc hl
+          dec c             ; Decrement 'for counter'.
+          xor a             ; Do the rect-width*2 for-loop logic...
+          cp c
+        jp nz,-
+      pop bc                ; Restore rect-width*2.
+    djnz --                 ; The rect-height for-loop.
+  ret
 
 
 .ends
