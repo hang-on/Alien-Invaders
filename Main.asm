@@ -7,7 +7,7 @@
 .equ TIMER_INIT_VALUE 120
 .equ RASTER_INIT_VALUE 7
 .equ BASE_WIDTH 5
-.equ BASE_HEIGHT 4
+.equ BASE_HEIGHT 3
 .equ CENTER_BASE_FIRST_TILE $3c5c
 .equ ONE_TILEMAP_ROW 32*2
 ;
@@ -34,7 +34,8 @@
 .ramsection "Main variables" slot 3
   vertical_scroll_value db
   vertical_scroll_timer db
-  base_buffer dsb BASE_WIDTH*BASE_HEIGHT*2   ; * 2 = name table words.
+  base_buffer dsb BASE_WIDTH*((BASE_HEIGHT+1)*2)  ; * 2 = name table words.
+                                                  ; +1 to add empty btm. row.
   center_base_address dw
 .ends
 .bank 0 slot 0
@@ -54,14 +55,14 @@
     LOAD_IMAGE MockupAssets,MockupAssetsEnd
     ; Load player base tiles from vram tilemap to buffer.
     ld a,BASE_WIDTH
-    ld b,BASE_HEIGHT
+    ld b,BASE_HEIGHT+1
     ld hl,CENTER_BASE_FIRST_TILE
     ld de,base_buffer
     call copy_tilemap_rect_to_buffer
     ; Blank the center base.
     ld hl,CENTER_BASE_FIRST_TILE
     ld a,BASE_WIDTH
-    ld b,BASE_HEIGHT
+    ld b,BASE_HEIGHT+1
     call blank_tilemap_rect
     ; Turn on screen, etc.
     ld hl,register_data
@@ -79,7 +80,7 @@
     call SetRegister
     ; Test: Write the center base
     ld a,BASE_WIDTH
-    ld b,BASE_HEIGHT
+    ld b,BASE_HEIGHT+1
     ld hl,base_buffer
     ld de,(center_base_address)
     call copy_buffer_to_tilemap_rect
