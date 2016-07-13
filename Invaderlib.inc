@@ -115,7 +115,7 @@
   ret
   ; ---------------------------------------------------------------------------
   copy_buffer_to_tilemap_rect:
-    ;
+    ; Reverse of copy_tilemap_rect_to_buffer.
     ; A = Rect width.
     ; B = Rect height.
     ; HL = Base address of buffer.
