@@ -35,6 +35,7 @@
   vertical_scroll_value db
   vertical_scroll_timer db
   base_buffer dsb BASE_WIDTH*BASE_HEIGHT*2   ; * 2 = name table words.
+  center_base_address dw
 .ends
 .bank 0 slot 0
 ; -----------------------------------------------------------------------------
@@ -46,6 +47,9 @@
     ;
     ld a,TIMER_INIT_VALUE
     ld (vertical_scroll_timer),a
+    ;
+    ld hl,CENTER_BASE_FIRST_TILE
+    ld (center_base_address),hl
     ;
     LOAD_IMAGE MockupAssets,MockupAssetsEnd
     ; Load player base tiles from vram tilemap to buffer.
@@ -59,12 +63,6 @@
     ld a,BASE_WIDTH
     ld b,BASE_HEIGHT
     call blank_tilemap_rect
-    ; Test: Write the center base again.
-    ld a,BASE_WIDTH
-    ld b,BASE_HEIGHT
-    ld hl,base_buffer
-    ld de,CENTER_BASE_FIRST_TILE
-    call copy_buffer_to_tilemap_rect
     ; Turn on screen, etc.
     ld hl,register_data
     call load_vdp_registers
@@ -79,6 +77,12 @@
     ld a,(vertical_scroll_value)
     ld b,VERTICAL_SCROLL_REGISTER
     call SetRegister
+    ; Test: Write the center base
+    ld a,BASE_WIDTH
+    ld b,BASE_HEIGHT
+    ld hl,base_buffer
+    ld de,(center_base_address)
+    call copy_buffer_to_tilemap_rect
     ;
     ; Non-vblank stuff below this line...
     ;
@@ -93,8 +97,17 @@
       cp VERTICAL_SCROLL_LIMIT
       jp nz,+
         ld a,VSCROLL_INIT_VALUE
+        ld (vertical_scroll_value),a
+        ld hl,CENTER_BASE_FIRST_TILE
+        ld (center_base_address),hl
+        jp vertical_scroll_end
       +:
       ld (vertical_scroll_value),a
+      ld hl,(center_base_address)
+      ld de,ONE_TILEMAP_ROW
+      sbc hl,de
+      ld (center_base_address),hl
+      ;
       jp vertical_scroll_end                           ;
     decrement_timer:
       ; Not time for scrolling yet - just decrement the timer.
