@@ -53,12 +53,13 @@
     jr -
   ret
   ;
-  tilemap_to_buffer:
-    ; fill a buffer with tilemap words read from a table
-    ; A = number of words to read
+  tilemap_rect_to_buffer:
+    ; A = rect width
+    ; B = rect height
     ; HL = table of tilemap addresses
     ; DE = Destination buffer.
-    ld b,a
+    add a,a
+    ld c,a
     -:
       push hl
         ; convert HL from pointer to word pointed to...
@@ -73,12 +74,19 @@
         or VRAM_READ_COMMAND
         out (CONTROL_PORT),a
       pop hl
-      .rept 2
-        in a,(DATA_PORT)
-        ld (de),a
-        inc de
-        inc hl
-      .endr
+      push bc
+        read_loop:
+          in a,(DATA_PORT)
+          ld (de),a
+          inc de
+          dec c
+          xor a
+          cp c
+        jp nz,read_loop
+      pop bc
+      inc hl
+      inc hl
     djnz -
   ret
+
 .ends

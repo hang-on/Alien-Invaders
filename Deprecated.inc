@@ -52,3 +52,54 @@
     or a
   +:
 .endm
+
+; -----------------------------------------------------------------------------
+tilemap_to_buffer:
+  ; fill a buffer with tilemap words read from a table
+  ; A = number of words to read
+  ; HL = table of tilemap addresses
+  ; DE = Destination buffer.
+  ld b,a
+  -:
+    push hl
+      ; convert HL from pointer to word pointed to...
+      ld a,(hl)
+      inc hl
+      ld h,(hl)
+      ld l,a
+      ; Read one word into buffer and update both pointers
+      ld a,l
+      out (CONTROL_PORT),a
+      ld a,h
+      or VRAM_READ_COMMAND
+      out (CONTROL_PORT),a
+    pop hl
+    .rept 2
+      in a,(DATA_PORT)
+      ld (de),a
+      inc de
+      inc hl
+    .endr
+  djnz -
+ret
+
+base_tilemap_table:
+  .dw CENTER_BASE_FIRST_TILE,
+  .dw CENTER_BASE_FIRST_TILE+2
+  .dw CENTER_BASE_FIRST_TILE+4
+  .dw CENTER_BASE_FIRST_TILE+6
+  .dw CENTER_BASE_FIRST_TILE+8
+  ;
+  .dw CENTER_BASE_FIRST_TILE+(32*2)
+  .dw CENTER_BASE_FIRST_TILE+2+(32*2)
+  .dw CENTER_BASE_FIRST_TILE+4+(32*2)
+  .dw CENTER_BASE_FIRST_TILE+6+(32*2)
+  .dw CENTER_BASE_FIRST_TILE+8+(32*2)
+  ;
+  .dw CENTER_BASE_FIRST_TILE+(62*2)
+  .dw CENTER_BASE_FIRST_TILE+2+(62*2)
+  .dw CENTER_BASE_FIRST_TILE+4+(62*2)
+  .dw CENTER_BASE_FIRST_TILE+6+(62*2)
+  .dw CENTER_BASE_FIRST_TILE+8+(62*2)
+  ;
+; -----------------------------------------------------------------------------

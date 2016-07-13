@@ -48,10 +48,15 @@
     ;
     LOAD_IMAGE MockupAssets,MockupAssetsEnd
     ; Load player base tiles from vram tilemap to buffer.
-    ld a,BASE_WIDTH*BASE_HEIGHT
-    ld hl,base_tilemap_table
+    ;ld a,BASE_WIDTH*BASE_HEIGHT
+    ;ld hl,base_tilemap_table
+    ;ld de,base_buffer
+    ;call tilemap_to_buffer
+    ld a,BASE_WIDTH
+    ld b,BASE_HEIGHT
+    ld hl,base_tilemap_table_2
     ld de,base_buffer
-    call tilemap_to_buffer
+    call tilemap_rect_to_buffer
     ;
     ; Turn on screen, etc.
     ld hl,register_data
@@ -97,26 +102,11 @@
 ; -----------------------------------------------------------------------------
 .section "Mockup Assets" free
 ; -----------------------------------------------------------------------------
-  base_tilemap_table:
-    ; Note: Check BASE_WIDTH and BASE_HEIGHT.
+  base_tilemap_table_2:
     .dw CENTER_BASE_FIRST_TILE,
-    .dw CENTER_BASE_FIRST_TILE+2
-    .dw CENTER_BASE_FIRST_TILE+4
-    .dw CENTER_BASE_FIRST_TILE+6
-    .dw CENTER_BASE_FIRST_TILE+8
-    ;
     .dw CENTER_BASE_FIRST_TILE+(32*2)
-    .dw CENTER_BASE_FIRST_TILE+2+(32*2)
-    .dw CENTER_BASE_FIRST_TILE+4+(32*2)
-    .dw CENTER_BASE_FIRST_TILE+6+(32*2)
-    .dw CENTER_BASE_FIRST_TILE+8+(32*2)
-    ;
     .dw CENTER_BASE_FIRST_TILE+(62*2)
-    .dw CENTER_BASE_FIRST_TILE+2+(62*2)
-    .dw CENTER_BASE_FIRST_TILE+4+(62*2)
-    .dw CENTER_BASE_FIRST_TILE+6+(62*2)
-    .dw CENTER_BASE_FIRST_TILE+8+(62*2)
-    ;
+
   MockupAssets:
     .include "MockupAssets.inc"
   MockupAssetsEnd:
