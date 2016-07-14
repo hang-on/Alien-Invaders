@@ -2,8 +2,8 @@
 .include "Invaderlib.inc"
 ;
 .equ ALIEN_ARMY_FIRST_ROW 10
-.equ SHIELDS_HSCROLL_INIT_VALUE 8
-.equ ROBOTS_HSCROLL_INIT_VALUE 8
+.equ SHIELDS_HSCROLL_INIT_VALUE 0
+.equ ROBOTS_HSCROLL_INIT_VALUE 0
 .equ VSCROLL_INIT_VALUE 223
 .equ VERTICAL_SCROLL_STEP 8
 .equ VERTICAL_SCROLL_LIMIT 183
@@ -16,6 +16,10 @@
 .equ SKEW 6
 .equ ENABLED 1
 .equ DISABLED 0
+.equ ARMY_DIRECTION_RIGHT 00
+.equ ARMY_DIRECTION_LEFT $ff
+.equ ARMY_OFFSET_INIT_VALUE 00
+.equ ARMY_MOVE_INTERVAL 80
 ;
 .bank 0 slot 0
 .org $0038
@@ -41,6 +45,10 @@
   robots_zone_start db                ; These two zone variables MUST be in
   shields_zone_start db               ; this order (handle_raster_interrupt).
   ;
+  army_offset db
+  army_move_timer db
+  army_direction db
+  ;
   shields_horizontal_scroll_value db
   robots_horizontal_scroll_value db
   vertical_scroll_status db
@@ -55,17 +63,22 @@
 .section "main" free
 ; -----------------------------------------------------------------------------
   setup_main:
+    ld a,ARMY_MOVE_INTERVAL
+    ld (army_move_timer),a
+    ld a,ARMY_OFFSET_INIT_VALUE
+    ld (army_offset),a
+    ;
     ld a,(RASTER_INIT_VALUE+1)*ALIEN_ARMY_FIRST_ROW
     ld (robots_zone_start),a
     add a,(RASTER_INIT_VALUE+1)*2
     ld (shields_zone_start),a
     ;
     ld a,ROBOTS_HSCROLL_INIT_VALUE
-    add a,SKEW
+    ;add a,SKEW
     ld (robots_horizontal_scroll_value),a
     ;
     ld a,SHIELDS_HSCROLL_INIT_VALUE
-    sub SKEW
+    ;sub SKEW
     ld (shields_horizontal_scroll_value),a
     ;
     ld a,VSCROLL_INIT_VALUE
