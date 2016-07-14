@@ -52,11 +52,11 @@
 ; -----------------------------------------------------------------------------
   setup_main:
     ld a,ROBOTS_HSCROLL_INIT_VALUE
-    sub SKEW
+    ;add a,SKEW
     ld (robots_horizontal_scroll_value),a
     ;
     ld a,SHIELDS_HSCROLL_INIT_VALUE
-    add a,SKEW
+    ;sub SKEW
     ld (shields_horizontal_scroll_value),a
     ;
     ld a,VSCROLL_INIT_VALUE
