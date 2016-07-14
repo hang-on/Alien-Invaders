@@ -20,6 +20,7 @@
 .equ ARMY_DIRECTION_LEFT $ff
 .equ ARMY_OFFSET_INIT_VALUE 00
 .equ ARMY_MOVE_INTERVAL 80
+.equ ARMY_SPEED 2
 ;
 .bank 0 slot 0
 .org $0038
@@ -128,6 +129,26 @@
     ;
     ; Non-vblank stuff below this line...
     ;
+    ld a,(army_move_timer)
+    or a
+    jp nz,decrement_army_move_timer
+      ; Time is up, move the alien army!
+      ld a,ARMY_MOVE_INTERVAL
+      ld (army_move_timer),a
+      ld b,ARMY_SPEED
+      ld a,(robots_horizontal_scroll_value)
+      add a,b
+      ld (robots_horizontal_scroll_value),a
+      ld a,(shields_horizontal_scroll_value)
+      add a,b
+      ld (shields_horizontal_scroll_value),a
+      jp finish_army_movement
+    decrement_army_move_timer:
+      dec a
+      ld (army_move_timer),a
+    finish_army_movement:
+    ;
+    ; Timed vertical scroll for testing.
     ld a,(vertical_scroll_status)
     cp DISABLED
     jp z,vertical_scroll_end
