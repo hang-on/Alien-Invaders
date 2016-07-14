@@ -19,7 +19,7 @@
 .equ ARMY_DIRECTION_RIGHT 00
 .equ ARMY_DIRECTION_LEFT $ff
 .equ ARMY_OFFSET_INIT_VALUE 00
-.equ ARMY_MOVE_INTERVAL 80
+.equ ARMY_MOVE_INTERVAL 60
 .equ ARMY_SPEED 2
 ;
 .bank 0 slot 0
@@ -49,6 +49,7 @@
   army_offset db
   army_move_timer db
   army_direction db
+  army_skew_mode db
   ;
   shields_horizontal_scroll_value db
   robots_horizontal_scroll_value db
@@ -68,6 +69,8 @@
     ld (army_move_timer),a
     ld a,ARMY_OFFSET_INIT_VALUE
     ld (army_offset),a
+    ld a,ARMY_DIRECTION_LEFT
+    ld (army_direction),a
     ;
     ld a,(RASTER_INIT_VALUE+1)*ALIEN_ARMY_FIRST_ROW
     ld (robots_zone_start),a
@@ -136,6 +139,13 @@
       ld a,ARMY_MOVE_INTERVAL
       ld (army_move_timer),a
       ld b,ARMY_SPEED
+      ld a,(army_direction)
+      or a
+      jp z,+
+        ld a,b
+        neg
+        ld b,a
+      +:
       ld a,(robots_horizontal_scroll_value)
       add a,b
       ld (robots_horizontal_scroll_value),a
