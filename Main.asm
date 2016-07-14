@@ -1,6 +1,7 @@
 .include "Base.inc"
 .include "Invaderlib.inc"
 ;
+.equ ALIEN_ARMY_FIRST_ROW 10
 .equ SHIELDS_HSCROLL_INIT_VALUE 8
 .equ ROBOTS_HSCROLL_INIT_VALUE 8
 .equ VSCROLL_INIT_VALUE 223
@@ -37,6 +38,9 @@
 ;
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Main variables" slot 3
+  robots_zone_start db                ; These two zone variables MUST be in
+  shields_zone_start db               ; this order (handle_raster_interrupt).
+  ;
   shields_horizontal_scroll_value db
   robots_horizontal_scroll_value db
   vertical_scroll_status db
@@ -51,12 +55,17 @@
 .section "main" free
 ; -----------------------------------------------------------------------------
   setup_main:
+    ld a,(RASTER_INIT_VALUE+1)*ALIEN_ARMY_FIRST_ROW
+    ld (robots_zone_start),a
+    add a,(RASTER_INIT_VALUE+1)*2
+    ld (shields_zone_start),a
+    ;
     ld a,ROBOTS_HSCROLL_INIT_VALUE
-    ;add a,SKEW
+    add a,SKEW
     ld (robots_horizontal_scroll_value),a
     ;
     ld a,SHIELDS_HSCROLL_INIT_VALUE
-    ;sub SKEW
+    sub SKEW
     ld (shields_horizontal_scroll_value),a
     ;
     ld a,VSCROLL_INIT_VALUE
@@ -148,22 +157,29 @@
     ; 3 - Bases and player.
     ; Determine inside which zone the current line is, and apply hscroll
     ; to the vdp register.
+    ld hl,robots_zone_start
     in a,(V_COUNTER_PORT)
-    cp 8*10 ; FIXME! Let these be vars.
+    ld b,HORIZONTAL_SCROLL_REGISTER
+    cp (hl)
     jp nc,+
       ; Robots and cannons part.
       ld a,(robots_horizontal_scroll_value)
-      ld b,HORIZONTAL_SCROLL_REGISTER
-      call SetRegister
-      jp hscroll_end
+      out (CONTROL_PORT),a
+      ld a,REGISTER_WRITE_COMMAND
+      or b
+      out (CONTROL_PORT),a
+      ret
     +:
-    cp 8*12
+    inc hl
+    cp (hl)
     jp nc,+
       ; Shields part.
       ld a,(shields_horizontal_scroll_value)
-      ld b,HORIZONTAL_SCROLL_REGISTER
-      call SetRegister
-      jp hscroll_end
+      out (CONTROL_PORT),a
+      ld a,REGISTER_WRITE_COMMAND
+      or b
+      out (CONTROL_PORT),a
+      ret
     +:
     ; Below shields.
     ld a,0
