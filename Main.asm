@@ -1,6 +1,8 @@
 .include "Base.inc"
 .include "Invaderlib.inc"
 ;
+.equ SHIELDS_HSCROLL_INIT_VALUE 8
+.equ ROBOTS_HSCROLL_INIT_VALUE 8
 .equ VSCROLL_INIT_VALUE 223
 .equ VERTICAL_SCROLL_STEP 8
 .equ VERTICAL_SCROLL_LIMIT 183
@@ -35,6 +37,8 @@
 ;
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 .ramsection "Main variables" slot 3
+  shields_horizontal_scroll_value db
+  robots_horizontal_scroll_value db
   vertical_scroll_status db
   vertical_scroll_value db
   vertical_scroll_timer db
@@ -47,6 +51,14 @@
 .section "main" free
 ; -----------------------------------------------------------------------------
   setup_main:
+    ld a,ROBOTS_HSCROLL_INIT_VALUE
+    sub SKEW
+    ld (robots_horizontal_scroll_value),a
+    ;
+    ld a,SHIELDS_HSCROLL_INIT_VALUE
+    add a,SKEW
+    ld (shields_horizontal_scroll_value),a
+    ;
     ld a,VSCROLL_INIT_VALUE
     ld (vertical_scroll_value),a
     ;
@@ -128,6 +140,38 @@
     vertical_scroll_end:
     ;
   jp main
+  ;
+  handle_raster_interrupt:
+    ; The screen is divided into three independent hscroll zones:
+    ; 1 - Robots and cannons.
+    ; 2 - Shields.
+    ; 3 - Bases and player.
+    ; Determine inside which zone the current line is, and apply hscroll
+    ; to the vdp register.
+    in a,(V_COUNTER_PORT)
+    cp 8*10 ; FIXME! Let these be vars.
+    jp nc,+
+      ; Robots and cannons part.
+      ld a,(robots_horizontal_scroll_value)
+      ld b,HORIZONTAL_SCROLL_REGISTER
+      call SetRegister
+      jp hscroll_end
+    +:
+    cp 8*12
+    jp nc,+
+      ; Shields part.
+      ld a,(shields_horizontal_scroll_value)
+      ld b,HORIZONTAL_SCROLL_REGISTER
+      call SetRegister
+      jp hscroll_end
+    +:
+    ; Below shields.
+    ld a,0
+    ld b,HORIZONTAL_SCROLL_REGISTER
+    call SetRegister
+    jp hscroll_end
+    hscroll_end:
+  ret
 .ends
 ;
 .bank 1 slot 1

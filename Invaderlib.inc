@@ -31,38 +31,6 @@
 ; -----------------------------------------------------------------------------
 .section "Invaderlib functions" free
 ; -----------------------------------------------------------------------------
-  handle_raster_interrupt:
-    ; The screen is divided into three independent hscroll zones:
-    ; 1 - Robots and cannons.
-    ; 2 - Shields.
-    ; 3 - Bases and player.
-    ; Determine inside which zone the current line is, and apply hscroll
-    ; to the vdp register.
-    in a,(V_COUNTER_PORT)
-    cp 8*10 ; FIXME! Let these be vars.
-    jp nc,+
-      ; Robots and cannons part.
-      ld a,(-SKEW) ; FIXME! Let these be vars.
-      ld b,HORIZONTAL_SCROLL_REGISTER
-      call SetRegister
-      jp hscroll_end
-    +:
-    cp 8*12
-    jp nc,+
-      ; Shields part.
-      ld a,SKEW
-      ld b,HORIZONTAL_SCROLL_REGISTER
-      call SetRegister
-      jp hscroll_end
-    +:
-    ; Below shields.
-    ld a,0
-    ld b,HORIZONTAL_SCROLL_REGISTER
-    call SetRegister
-    jp hscroll_end
-    hscroll_end:
-  ret
-  ; ---------------------------------------------------------------------------
   load_vdp_registers:
     ; Load all 11 vdp registers with preset values.
     ; Entry: HL pointing to init data block (11 bytes).
