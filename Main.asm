@@ -21,6 +21,9 @@
 .equ ARMY_OFFSET_INIT_VALUE 00
 .equ ARMY_MOVE_INTERVAL 60
 .equ ARMY_SPEED 2
+.equ SKEW_ON 00
+.equ SKEW_OFF $ff
+.equ ARMY_SKEW_VALUE 8
 ;
 .bank 0 slot 0
 .org $0038
@@ -46,7 +49,7 @@
   robots_zone_start db                ; These two zone variables MUST be in
   shields_zone_start db               ; this order (handle_raster_interrupt).
   ;
-  army_offset db
+  army_move_counter db
   army_move_timer db
   army_direction db
   army_skew_mode db
@@ -67,9 +70,7 @@
   setup_main:
     ld a,ARMY_MOVE_INTERVAL
     ld (army_move_timer),a
-    ld a,ARMY_OFFSET_INIT_VALUE
-    ld (army_offset),a
-    ld a,ARMY_DIRECTION_LEFT
+    ld a,ARMY_DIRECTION_RIGHT
     ld (army_direction),a
     ;
     ld a,(RASTER_INIT_VALUE+1)*ALIEN_ARMY_FIRST_ROW
@@ -138,6 +139,19 @@
       ; Time is up, move the alien army!
       ld a,ARMY_MOVE_INTERVAL
       ld (army_move_timer),a
+      ; FIXME: Test army_move_counter to see if it is time to scroll down and
+      ; change direction.
+      ; !!
+      ld a,(army_skew_mode)
+      or a
+      cpl
+      ld (army_skew_mode),a
+      jp nz,+
+        ld c,ARMY_SKEW_VALUE
+        jp ++
+      +:
+        ld c,(-ARMY_SKEW_VALUE)
+      ++:
       ld b,ARMY_SPEED
       ld a,(army_direction)
       or a
@@ -148,15 +162,19 @@
       +:
       ld a,(robots_horizontal_scroll_value)
       add a,b
+      add a,c
       ld (robots_horizontal_scroll_value),a
       ld a,(shields_horizontal_scroll_value)
       add a,b
+      sub c
       ld (shields_horizontal_scroll_value),a
       jp finish_army_movement
     decrement_army_move_timer:
       dec a
       ld (army_move_timer),a
     finish_army_movement:
+      ld hl,army_move_counter
+      inc (hl)
     ;
     ; Timed vertical scroll for testing.
     ld a,(vertical_scroll_status)
