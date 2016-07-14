@@ -157,6 +157,7 @@
     ; 3 - Bases and player.
     ; Determine inside which zone the current line is, and apply hscroll
     ; to the vdp register.
+    ; NOTE: Fills almost entire hblank by now. Speed optimized.
     ld hl,robots_zone_start
     in a,(V_COUNTER_PORT)
     ld b,HORIZONTAL_SCROLL_REGISTER
@@ -182,11 +183,11 @@
       ret
     +:
     ; Below shields.
-    ld a,0
-    ld b,HORIZONTAL_SCROLL_REGISTER
-    call SetRegister
-    jp hscroll_end
-    hscroll_end:
+    xor a
+    out (CONTROL_PORT),a
+    ld a,REGISTER_WRITE_COMMAND
+    or b
+    out (CONTROL_PORT),a
   ret
 .ends
 ;
