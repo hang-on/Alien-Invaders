@@ -14,8 +14,6 @@
 .equ BASE_HEIGHT 3
 .equ CENTER_BASE_FIRST_TILE $3c5c
 .equ ONE_TILEMAP_ROW 32*2
-.equ ENABLED 1
-.equ DISABLED 0
 ;
 .equ ARMY_DIRECTION_RIGHT 00
 .equ ARMY_DIRECTION_LEFT $ff
@@ -27,6 +25,9 @@
 .equ SKEW_ON 00
 .equ SKEW_OFF $ff
 .equ ARMY_SKEW_VALUE 6
+;
+.equ ENABLED $ff
+.equ DISABLED 0
 ;
 .bank 0 slot 0
 .org $0038
@@ -61,7 +62,6 @@
   robots_horizontal_scroll_value db
   vertical_scroll_status db
   vertical_scroll_value db
-  vertical_scroll_timer db
   base_buffer dsb BASE_WIDTH*((BASE_HEIGHT+1)*2)  ; * 2 = name table words.
                                                   ; +1 to add empty btm. row.
   center_base_address dw
@@ -90,9 +90,6 @@
     ;
     ld a,VSCROLL_INIT_VALUE
     ld (vertical_scroll_value),a
-    ;
-    ld a,TIMER_INIT_VALUE
-    ld (vertical_scroll_timer),a
     ;
     ld a,ENABLED
     ld (vertical_scroll_status),a
