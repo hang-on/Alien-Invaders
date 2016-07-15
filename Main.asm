@@ -1,10 +1,11 @@
 .include "Base.inc"
 .include "Invaderlib.inc"
 ;
-.equ ALIEN_ARMY_FIRST_ROW 10
+.equ ALIEN_ARMY_FIRST_ROW 5
 .equ SHIELDS_HSCROLL_INIT_VALUE 0
 .equ ROBOTS_HSCROLL_INIT_VALUE 0
-.equ VSCROLL_INIT_VALUE 223
+.equ LAST_VISIBLE_LINE 191
+.equ VSCROLL_INIT_VALUE 223         
 .equ VERTICAL_SCROLL_STEP 8
 .equ VERTICAL_SCROLL_LIMIT 183
 .equ TIMER_INIT_VALUE 120
@@ -76,7 +77,7 @@
     ld a,ARMY_OFFSET_INIT_VALUE
     ld (army_offset),a
     ;
-    ld a,(RASTER_INIT_VALUE+1)*ALIEN_ARMY_FIRST_ROW
+    ld a,(RASTER_INIT_VALUE+1)*(ALIEN_ARMY_FIRST_ROW+((VSCROLL_INIT_VALUE-LAST_VISIBLE_LINE)/8))
     ld (robots_zone_start),a
     add a,(RASTER_INIT_VALUE+1)*2
     ld (shields_zone_start),a
