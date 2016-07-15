@@ -123,7 +123,7 @@
     ld a,(vertical_scroll_value)
     ld b,VERTICAL_SCROLL_REGISTER
     call SetRegister
-    ; Test: Write the center base
+    ; Write the center base
     ld a,BASE_WIDTH
     ld b,BASE_HEIGHT+1                ; +1 for the self-erasing trick.
     ld hl,base_buffer
@@ -132,22 +132,23 @@
     ;
     ; Non-vblank stuff below this line...
     ;
+    ; See if it is time to move the alien army or just decrement the timer.
     ld a,(army_move_timer)
     or a
     jp nz,decrement_army_move_timer
-      ; Time is up, move the alien army!
+      ; Reset timer.
       ld a,ARMY_MOVE_INTERVAL
       ld (army_move_timer),a
-      ;
+      ; Toggle skew.
       ld a,(army_skew_mode)
       or a
       cpl
       ld (army_skew_mode),a
       ;
-      ; Check for army at left or right border and change direction.
       ld a,(army_offset)
       cp (-ARMY_OFFSET_LIMIT)
       jp nz,+
+        ; Army is at the left border. Change direction and move down one row.
         ld a,ARMY_DIRECTION_RIGHT
         ld (army_direction),a
         ld a,(vertical_scroll_status)
@@ -157,6 +158,7 @@
       +:
       cp ARMY_OFFSET_LIMIT
       jp nz,++
+        ; Army is at the right border. Change direction and move down one row.
         ld a,ARMY_DIRECTION_LEFT
         ld (army_direction),a
         ld a,(vertical_scroll_status)
