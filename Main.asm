@@ -186,6 +186,13 @@
         ld de,ONE_TILEMAP_ROW
         sbc hl,de
         ld (center_base_address),hl
+        ld b,VERTICAL_SCROLL_STEP
+        ld a,(robots_zone_start)
+        add a,b
+        ld (robots_zone_start),a
+        ld a,(shields_zone_start)
+        add a,b
+        ld (shields_zone_start),a
       ret
     ;
     decrement_army_move_timer:
