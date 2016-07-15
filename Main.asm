@@ -114,7 +114,7 @@
     ; Turn on screen, etc.
     ld hl,register_data
     call load_vdp_registers
-    ; Skip an interrupt to make sure that we start main at vblank.
+    ; Skip a frame to make sure that we start main at vblank.
     ei
     call AwaitFrameInterrupt
   jp main
