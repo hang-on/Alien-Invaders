@@ -7,7 +7,7 @@
 .equ LAST_VISIBLE_LINE 191
 .equ VSCROLL_INIT_VALUE 223
 .equ VERTICAL_SCROLL_STEP 8
-.equ VERTICAL_SCROLL_LIMIT 183
+.equ VERTICAL_SCROLL_LIMIT 191
 .equ TIMER_INIT_VALUE 120
 .equ RASTER_INIT_VALUE 7
 .equ BASE_WIDTH 5
@@ -179,11 +179,9 @@
         sub VERTICAL_SCROLL_STEP
         cp VERTICAL_SCROLL_LIMIT
         jp nz,+
-          ; Restart program.
-          ld a,DISABLE_DISPLAY_DISABLE_FRAME_INTERRUPTS_NORMAL_SPRITES
-          ld b,1
-          call SetRegister
-          jp 0
+          ld a,DISABLED
+          ld (vertical_scroll_status),a
+          ret
           ;
         +:
         ld (vertical_scroll_value),a
