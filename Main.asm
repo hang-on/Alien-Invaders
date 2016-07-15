@@ -20,8 +20,8 @@
 .equ ARMY_DIRECTION_LEFT $ff
 .equ ARMY_OFFSET_LIMIT 16
 .equ ARMY_OFFSET_INIT_VALUE ARMY_OFFSET_LIMIT/2
-.equ ARMY_MOVE_INTERVAL 60
-.equ ARMY_SPEED 2
+.equ ARMY_MOVE_INTERVAL 40
+.equ ARMY_SPEED 1
 .equ SKEW_ON 00
 .equ SKEW_OFF $ff
 .equ ARMY_SKEW_VALUE 8
@@ -146,12 +146,14 @@
       jp nz,+
         ld a,ARMY_DIRECTION_RIGHT
         ld (army_direction),a
+        call move_army_down
         jp ++
       +:
       cp ARMY_OFFSET_LIMIT
       jp nz,++
         ld a,ARMY_DIRECTION_LEFT
         ld (army_direction),a
+        call move_army_down
       ++:
       ;
       ; Move army one step in the current direction.
@@ -166,6 +168,26 @@
       add a,b
       ld (army_offset),a
       jp finish_army_movement
+      ;
+      move_army_down:
+        ld a,(vertical_scroll_value)
+        sub VERTICAL_SCROLL_STEP
+        cp VERTICAL_SCROLL_LIMIT
+        jp nz,+
+          ; Restart program.
+          ld a,DISABLE_DISPLAY_DISABLE_FRAME_INTERRUPTS_NORMAL_SPRITES
+          ld b,1
+          call SetRegister
+          jp 0
+          ;
+        +:
+        ld (vertical_scroll_value),a
+        ld hl,(center_base_address)
+        ld de,ONE_TILEMAP_ROW
+        sbc hl,de
+        ld (center_base_address),hl
+      ret
+    ;
     decrement_army_move_timer:
       dec a
       ld (army_move_timer),a
