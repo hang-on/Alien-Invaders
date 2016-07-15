@@ -141,6 +141,11 @@
       ld a,ARMY_MOVE_INTERVAL
       ld (army_move_timer),a
       ;
+      ld a,(army_skew_mode)
+      or a
+      cpl
+      ld (army_skew_mode),a
+      ;
       ; Check for army at left or right border and change direction.
       ld a,(army_offset)
       cp (-ARMY_OFFSET_LIMIT)
@@ -202,9 +207,23 @@
       dec a
       ld (army_move_timer),a
     finish_army_movement:
-    ld a,(army_offset)
-    ld (robots_horizontal_scroll_value),a
-    ld (shields_horizontal_scroll_value),a
+    ld a,(army_skew_mode)
+    or a
+    jp nz,+
+      ld a,ARMY_SKEW_VALUE
+      ld b,a
+      ld a,(army_offset)
+      add a,b
+      ld (robots_horizontal_scroll_value),a
+      sub b
+      sub b
+      ld (shields_horizontal_scroll_value),a
+      jp ++
+      +:
+      ld a,(army_offset)
+      ld (robots_horizontal_scroll_value),a
+      ld (shields_horizontal_scroll_value),a
+    ++:
     ;
     ;
   jp main
