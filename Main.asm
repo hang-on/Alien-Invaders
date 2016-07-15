@@ -77,6 +77,8 @@
     ld (army_direction),a
     ld a,ARMY_OFFSET_INIT_VALUE
     ld (army_offset),a
+    ld a,SKEW_OFF
+    ld (army_skew_mode),a
     ;
     ld a,(RASTER_INIT_VALUE+1)*(ALIEN_ARMY_FIRST_ROW+((VSCROLL_INIT_VALUE-LAST_VISIBLE_LINE)/8))
     ld (robots_zone_start),a
@@ -117,6 +119,7 @@
     call AwaitFrameInterrupt
   jp main
   ;
+  ; ---------------------------------------------------------------------------
   main:
     call AwaitFrameInterrupt
     ;
@@ -132,7 +135,10 @@
     ;
     ; Non-vblank stuff below this line...
     ;
-    ; See if it is time to move the alien army or just decrement the timer.
+    ; -------------------------------------------------------------------------
+    ; M O V E  A L I E N  A R M Y
+    ; Move army horizontally and vertically, including skewing robots/shields.
+    ; ------------------------------------------------------------------------
     ld a,(army_move_timer)
     or a
     jp nz,decrement_army_move_timer
@@ -180,6 +186,8 @@
       jp finish_army_movement
       ;
       move_army_down:
+        ; Only proceed if vertical scrolling is enabled. When the alien army
+        ; reaches VERTICAL_SCROLL_LIMIT vertical scrolling is disabled.
         ld a,(vertical_scroll_value)
         sub VERTICAL_SCROLL_STEP
         cp VERTICAL_SCROLL_LIMIT
@@ -187,13 +195,16 @@
           ld a,DISABLED
           ld (vertical_scroll_status),a
           ret
-          ;
         +:
+        ; Okay, vertical scrolling is enabled.
         ld (vertical_scroll_value),a
+        ; When background (army) scrolls down one row, we have to draw the
+        ; player bases up one row (to make them stay put). FIXME: 3 bases!
         ld hl,(center_base_address)
         ld de,ONE_TILEMAP_ROW
         sbc hl,de
         ld (center_base_address),hl
+        ; Adjust the horizontal scroll zones to reflect current army position.
         ld b,VERTICAL_SCROLL_STEP
         ld a,(robots_zone_start)
         add a,b
@@ -202,14 +213,18 @@
         add a,b
         ld (shields_zone_start),a
       ret
-    ;
+      ;
     decrement_army_move_timer:
+      ; We come here if the army_move_timer is != 0.
       dec a
       ld (army_move_timer),a
     finish_army_movement:
+    ; Regardless of whether the army has moved or not, update the variables
+    ; controlling the hscroll zones (robots/cannons + shields).
     ld a,(army_skew_mode)
     or a
     jp nz,+
+      ; Apply skew to the army_offset.
       ld a,ARMY_SKEW_VALUE
       ld b,a
       ld a,(army_offset)
@@ -219,7 +234,8 @@
       sub b
       ld (shields_horizontal_scroll_value),a
       jp ++
-      +:
+    +:
+      ; Do NOT apply skew to the army_offset.
       ld a,(army_offset)
       ld (robots_horizontal_scroll_value),a
       ld (shields_horizontal_scroll_value),a
@@ -227,7 +243,7 @@
     ;
     ;
   jp main
-  ;
+  ; ---------------------------------------------------------------------------
   handle_raster_interrupt:
     ; The screen is divided into three independent hscroll zones:
     ; 1 - Robots and cannons.
