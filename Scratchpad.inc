@@ -103,3 +103,37 @@ base_tilemap_table:
   .dw CENTER_BASE_FIRST_TILE+8+(62*2)
   ;
 ; -----------------------------------------------------------------------------
+
+
+
+; ---
+      ; FIXME: Test army_move_counter to see if it is time to scroll down and
+      ; change direction.
+      ; !!
+      ld a,(army_skew_mode)
+      or a
+      cpl
+      ld (army_skew_mode),a
+      jp nz,+
+        ld c,ARMY_SKEW_VALUE
+        jp ++
+      +:
+        ld c,(-ARMY_SKEW_VALUE)
+      ++:
+      ld b,ARMY_SPEED
+      ld a,(army_direction)
+      or a
+      jp z,+
+        ld a,b
+        neg
+        ld b,a
+      +:
+      ld a,(robots_horizontal_scroll_value)
+      add a,b
+      add a,c
+      ld (robots_horizontal_scroll_value),a
+      ld a,(shields_horizontal_scroll_value)
+      add a,b
+      sub c
+      ld (shields_horizontal_scroll_value),a
+      jp finish_army_movement

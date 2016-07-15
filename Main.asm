@@ -18,7 +18,7 @@
 .equ DISABLED 0
 .equ ARMY_DIRECTION_RIGHT 00
 .equ ARMY_DIRECTION_LEFT $ff
-.equ ARMY_OFFSET_INIT_VALUE 00
+.equ ARMY_OFFSET_INIT_VALUE 8
 .equ ARMY_MOVE_INTERVAL 60
 .equ ARMY_SPEED 2
 .equ SKEW_ON 00
@@ -49,7 +49,7 @@
   robots_zone_start db                ; These two zone variables MUST be in
   shields_zone_start db               ; this order (handle_raster_interrupt).
   ;
-  army_move_counter db
+  army_offset db
   army_move_timer db
   army_direction db
   army_skew_mode db
@@ -72,6 +72,8 @@
     ld (army_move_timer),a
     ld a,ARMY_DIRECTION_RIGHT
     ld (army_direction),a
+    ld a,ARMY_OFFSET_INIT_VALUE
+    ld (army_offset),a
     ;
     ld a,(RASTER_INIT_VALUE+1)*ALIEN_ARMY_FIRST_ROW
     ld (robots_zone_start),a
@@ -79,11 +81,8 @@
     ld (shields_zone_start),a
     ;
     ld a,ROBOTS_HSCROLL_INIT_VALUE
-    ;add a,SKEW
     ld (robots_horizontal_scroll_value),a
-    ;
     ld a,SHIELDS_HSCROLL_INIT_VALUE
-    ;sub SKEW
     ld (shields_horizontal_scroll_value),a
     ;
     ld a,VSCROLL_INIT_VALUE
@@ -139,42 +138,24 @@
       ; Time is up, move the alien army!
       ld a,ARMY_MOVE_INTERVAL
       ld (army_move_timer),a
-      ; FIXME: Test army_move_counter to see if it is time to scroll down and
-      ; change direction.
-      ; !!
-      ld a,(army_skew_mode)
-      or a
-      cpl
-      ld (army_skew_mode),a
-      jp nz,+
-        ld c,ARMY_SKEW_VALUE
-        jp ++
-      +:
-        ld c,(-ARMY_SKEW_VALUE)
-      ++:
-      ld b,ARMY_SPEED
       ld a,(army_direction)
-      or a
+      cp ARMY_DIRECTION_RIGHT
+      ld a,ARMY_SPEED
       jp z,+
-        ld a,b
         neg
-        ld b,a
       +:
-      ld a,(robots_horizontal_scroll_value)
+      ld b,a
+      ld a,(army_offset)
       add a,b
-      add a,c
-      ld (robots_horizontal_scroll_value),a
-      ld a,(shields_horizontal_scroll_value)
-      add a,b
-      sub c
-      ld (shields_horizontal_scroll_value),a
+      ld (army_offset),a
       jp finish_army_movement
     decrement_army_move_timer:
       dec a
       ld (army_move_timer),a
     finish_army_movement:
-      ld hl,army_move_counter
-      inc (hl)
+    ld a,(army_offset)
+    ld (robots_horizontal_scroll_value),a
+    ld (shields_horizontal_scroll_value),a
     ;
     ; Timed vertical scroll for testing.
     ld a,(vertical_scroll_status)
