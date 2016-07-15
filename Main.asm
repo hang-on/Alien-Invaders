@@ -5,7 +5,7 @@
 .equ SHIELDS_HSCROLL_INIT_VALUE 0
 .equ ROBOTS_HSCROLL_INIT_VALUE 0
 .equ LAST_VISIBLE_LINE 191
-.equ VSCROLL_INIT_VALUE 223         
+.equ VSCROLL_INIT_VALUE 223
 .equ VERTICAL_SCROLL_STEP 8
 .equ VERTICAL_SCROLL_LIMIT 183
 .equ TIMER_INIT_VALUE 120
@@ -93,7 +93,7 @@
     ld a,TIMER_INIT_VALUE
     ld (vertical_scroll_timer),a
     ;
-    ld a,DISABLED
+    ld a,ENABLED
     ld (vertical_scroll_status),a
     ;
     ld hl,CENTER_BASE_FIRST_TILE
@@ -147,14 +147,18 @@
       jp nz,+
         ld a,ARMY_DIRECTION_RIGHT
         ld (army_direction),a
-        call move_army_down
+        ld a,(vertical_scroll_status)
+        cp ENABLED
+        call z,move_army_down
         jp ++
       +:
       cp ARMY_OFFSET_LIMIT
       jp nz,++
         ld a,ARMY_DIRECTION_LEFT
         ld (army_direction),a
-        call move_army_down
+        ld a,(vertical_scroll_status)
+        cp ENABLED
+        call z,move_army_down
       ++:
       ;
       ; Move army one step in the current direction.
@@ -204,39 +208,6 @@
     ld (robots_horizontal_scroll_value),a
     ld (shields_horizontal_scroll_value),a
     ;
-    ; Timed vertical scroll for testing.
-    ld a,(vertical_scroll_status)
-    cp DISABLED
-    jp z,vertical_scroll_end
-      ld a,(vertical_scroll_timer)
-      or a
-      jp nz,decrement_timer
-        ; Time is up - handle scrolling.
-        ld a,TIMER_INIT_VALUE
-        ld (vertical_scroll_timer),a
-        ld a,(vertical_scroll_value)
-        sub VERTICAL_SCROLL_STEP
-        cp VERTICAL_SCROLL_LIMIT
-        jp nz,+
-          ; Restart program.
-          ld a,DISABLE_DISPLAY_DISABLE_FRAME_INTERRUPTS_NORMAL_SPRITES
-          ld b,1
-          call SetRegister
-          jp 0
-          ;
-        +:
-        ld (vertical_scroll_value),a
-        ld hl,(center_base_address)
-        ld de,ONE_TILEMAP_ROW
-        sbc hl,de
-        ld (center_base_address),hl
-        ;
-        jp vertical_scroll_end                           ;
-      decrement_timer:
-        ; Not time for scrolling yet - just decrement the timer.
-        dec a
-        ld (vertical_scroll_timer),a
-    vertical_scroll_end:
     ;
   jp main
   ;
