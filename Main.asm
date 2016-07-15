@@ -19,6 +19,7 @@
 .equ ARMY_DIRECTION_RIGHT 00
 .equ ARMY_DIRECTION_LEFT $ff
 .equ ARMY_OFFSET_INIT_VALUE 8
+.equ ARMY_OFFSET_LIMIT 16
 .equ ARMY_MOVE_INTERVAL 60
 .equ ARMY_SPEED 2
 .equ SKEW_ON 00
@@ -138,6 +139,22 @@
       ; Time is up, move the alien army!
       ld a,ARMY_MOVE_INTERVAL
       ld (army_move_timer),a
+      ;
+      ; Check for army at left or right border and change direction.
+      ld a,(army_offset)
+      cp (-ARMY_OFFSET_LIMIT)
+      jp nz,+
+        ld a,ARMY_DIRECTION_RIGHT
+        ld (army_direction),a
+        jp ++
+      +:
+      cp ARMY_OFFSET_LIMIT
+      jp nz,++
+        ld a,ARMY_DIRECTION_LEFT
+        ld (army_direction),a
+      ++:
+      ;
+      ; Move army one step in the current direction.
       ld a,(army_direction)
       cp ARMY_DIRECTION_RIGHT
       ld a,ARMY_SPEED
