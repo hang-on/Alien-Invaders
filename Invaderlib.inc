@@ -115,6 +115,11 @@
     ; B = Rect height.
     ; HL = Base address of buffer.
     ; DE = Address of top left tile of tilemap rectangle.
+    ; Preserves all registers used
+    push af
+    push bc
+    push de
+    push hl
     add a,a                 ; Double width - the table elements are words.
     ld c,a                  ; Save width in C for counting.
     ; For each 'rect-height' do the following...
@@ -141,6 +146,10 @@
         jp nz,-
       pop bc                ; Restore rect-width*2.
     djnz --                 ; The rect-height for-loop.
+    pop hl
+    pop de
+    pop bc
+    pop af
   ret
   ; ---------------------------------------------------------------------------
   subtract_one_row:

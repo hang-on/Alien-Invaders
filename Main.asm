@@ -136,22 +136,15 @@
     ld a,(vertical_scroll_value)
     ld b,VERTICAL_SCROLL_REGISTER
     call SetRegister
-    ; Write the left base
+
+    ; Write the bases.
     ld a,BASE_WIDTH
     ld b,BASE_HEIGHT+1                ; +1 for the self-erasing trick.
     ld hl,base_buffer
     ld de,(left_base_address)
     call copy_buffer_to_tilemap_rect
-    ; Write the center base
-    ld a,BASE_WIDTH
-    ld b,BASE_HEIGHT+1                ; +1 for the self-erasing trick.
-    ld hl,base_buffer
     ld de,(center_base_address)
     call copy_buffer_to_tilemap_rect
-    ; Write the right base
-    ld a,BASE_WIDTH
-    ld b,BASE_HEIGHT+1                ; +1 for the self-erasing trick.
-    ld hl,base_buffer
     ld de,(right_base_address)
     call copy_buffer_to_tilemap_rect
     ;
