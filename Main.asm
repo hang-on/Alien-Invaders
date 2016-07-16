@@ -218,7 +218,8 @@
           ld (vertical_scroll_status),a
           ret
         +:
-        ; Okay, vertical scrolling is enabled.
+        ; Okay, vertical scrolling is enabled. Proceed with updating vertical
+        ; scroll value (for the army) and the player base addresses.
         ld (vertical_scroll_value),a
         ; When background (army) scrolls down one row, we have to draw the
         ; player bases up one row (to make them stay put).
