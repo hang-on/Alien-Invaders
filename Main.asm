@@ -181,7 +181,7 @@
         ld (army_direction),a
         ld a,(vertical_scroll_status)
         cp ENABLED
-        call z,move_army_down
+        call z,do_vertical_scroll
         jp ++
       +:
       cp ARMY_OFFSET_LIMIT
@@ -191,7 +191,7 @@
         ld (army_direction),a
         ld a,(vertical_scroll_status)
         cp ENABLED
-        call z,move_army_down
+        call z,do_vertical_scroll ; Move army down and bases up!
       ++:
       ;
       ; Move army one step in the current direction.
@@ -207,7 +207,7 @@
       ld (army_offset),a
       jp finish_army_movement
       ;
-      move_army_down: ; FIXME: Bad name!
+      do_vertical_scroll:
         ; Only proceed if vertical scrolling is enabled. When the alien army
         ; reaches VERTICAL_SCROLL_LIMIT vertical scrolling is disabled.
         ld a,(vertical_scroll_value)
