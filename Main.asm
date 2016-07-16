@@ -12,8 +12,11 @@
 .equ RASTER_INIT_VALUE 7
 .equ BASE_WIDTH 5
 .equ BASE_HEIGHT 3
-.equ CENTER_BASE_FIRST_TILE $3c5c
 .equ ONE_TILEMAP_ROW 32*2
+;
+.equ CENTER_BASE_FIRST_TILE $3c5c
+.equ LEFT_BASE_FIRST_TILE $3c4a
+.equ RIGHT_BASE_FIRST_TILE $3c6e
 ;
 .equ ARMY_DIRECTION_RIGHT 00
 .equ ARMY_DIRECTION_LEFT $ff
@@ -64,7 +67,9 @@
   vertical_scroll_value db
   base_buffer dsb BASE_WIDTH*((BASE_HEIGHT+1)*2)  ; * 2 = name table words.
                                                   ; +1 to add empty btm. row.
+  left_base_address dw
   center_base_address dw
+  right_base_address dw
 .ends
 .bank 0 slot 0
 ; -----------------------------------------------------------------------------
@@ -98,6 +103,10 @@
     ;
     ld hl,CENTER_BASE_FIRST_TILE
     ld (center_base_address),hl
+    ld hl,LEFT_BASE_FIRST_TILE
+    ld (left_base_address),hl
+    ld hl,RIGHT_BASE_FIRST_TILE
+    ld (right_base_address),hl
     ;
     LOAD_IMAGE MockupAssets,MockupAssetsEnd
     ; Load player base tiles from vram tilemap to buffer.
@@ -126,11 +135,23 @@
     ld a,(vertical_scroll_value)
     ld b,VERTICAL_SCROLL_REGISTER
     call SetRegister
+    ; Write the left base
+    ld a,BASE_WIDTH
+    ld b,BASE_HEIGHT+1                ; +1 for the self-erasing trick.
+    ld hl,base_buffer
+    ld de,(left_base_address)
+    call copy_buffer_to_tilemap_rect
     ; Write the center base
     ld a,BASE_WIDTH
     ld b,BASE_HEIGHT+1                ; +1 for the self-erasing trick.
     ld hl,base_buffer
     ld de,(center_base_address)
+    call copy_buffer_to_tilemap_rect
+    ; Write the right base
+    ld a,BASE_WIDTH
+    ld b,BASE_HEIGHT+1                ; +1 for the self-erasing trick.
+    ld hl,base_buffer
+    ld de,(right_base_address)
     call copy_buffer_to_tilemap_rect
     ;
     ; Non-vblank stuff below this line...
@@ -185,7 +206,7 @@
       ld (army_offset),a
       jp finish_army_movement
       ;
-      move_army_down:
+      move_army_down: ; FIXME: Bad name!
         ; Only proceed if vertical scrolling is enabled. When the alien army
         ; reaches VERTICAL_SCROLL_LIMIT vertical scrolling is disabled.
         ld a,(vertical_scroll_value)
@@ -204,6 +225,17 @@
         ld de,ONE_TILEMAP_ROW
         sbc hl,de
         ld (center_base_address),hl
+        ; FIXME: Major duplication!
+        ld hl,(left_base_address)
+        ld de,ONE_TILEMAP_ROW
+        sbc hl,de
+        ld (left_base_address),hl
+        ; FIXME: Major duplication!
+        ld hl,(right_base_address)
+        ld de,ONE_TILEMAP_ROW
+        sbc hl,de
+        ld (right_base_address),hl
+        ;
         ; Adjust the horizontal scroll zones to reflect current army position.
         ld b,VERTICAL_SCROLL_STEP
         ld a,(robots_zone_start)
