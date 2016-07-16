@@ -14,6 +14,7 @@
 .equ BASE_HEIGHT 3
 .equ ONE_TILEMAP_ROW 32*2
 ;
+.equ NUMBER_OF_PLAYER_BASES 3
 .equ CENTER_BASE_FIRST_TILE $3c5c
 .equ LEFT_BASE_FIRST_TILE $3c4a
 .equ RIGHT_BASE_FIRST_TILE $3c6e
@@ -67,9 +68,9 @@
   vertical_scroll_value db
   base_buffer dsb BASE_WIDTH*((BASE_HEIGHT+1)*2)  ; * 2 = name table words.
                                                   ; +1 to add empty btm. row.
-  left_base_address dw
-  center_base_address dw
-  right_base_address dw
+  left_base_address dw                 ; These base address variables MUST be
+  center_base_address dw               ; in this order (used during vertical
+  right_base_address dw                ; scroll).
 .ends
 .bank 0 slot 0
 ; -----------------------------------------------------------------------------
@@ -220,22 +221,14 @@
         ; Okay, vertical scrolling is enabled.
         ld (vertical_scroll_value),a
         ; When background (army) scrolls down one row, we have to draw the
-        ; player bases up one row (to make them stay put). FIXME: 3 bases!
-        ld hl,(center_base_address)
-        ld de,ONE_TILEMAP_ROW
-        sbc hl,de
-        ld (center_base_address),hl
-        ; FIXME: Major duplication!
-        ld hl,(left_base_address)
-        ld de,ONE_TILEMAP_ROW
-        sbc hl,de
-        ld (left_base_address),hl
-        ; FIXME: Major duplication!
-        ld hl,(right_base_address)
-        ld de,ONE_TILEMAP_ROW
-        sbc hl,de
-        ld (right_base_address),hl
-        ;
+        ; player bases up one row (to make them stay put).
+        ld b,NUMBER_OF_PLAYER_BASES
+        ld hl,left_base_address       ; Point to first base address variable.
+        -:
+          call subtract_one_row       ; Update the base address.
+          inc hl                      ; Forward pointer to next base address
+          inc hl                      ; variable.
+        djnz -
         ; Adjust the horizontal scroll zones to reflect current army position.
         ld b,VERTICAL_SCROLL_STEP
         ld a,(robots_zone_start)

@@ -142,6 +142,28 @@
       pop bc                ; Restore rect-width*2.
     djnz --                 ; The rect-height for-loop.
   ret
-
+  ; ---------------------------------------------------------------------------
+  subtract_one_row:
+    ; Take a pointer to a variable containing a screen address. Get the
+    ; screen address, and subtract one row of tiles from it. Store the
+    ; updated screen address back into the variable and return.
+    ; Used to update the player base's addresses as the screen scrolls
+    ; vertically.
+    ; Entry: HL = Pointer to variable.
+    ; Uses: AF, DE (HL is saved).
+    push hl
+    ld a,(hl)
+    inc hl
+    ld h,(hl)
+    ld l,a
+    ld de,ONE_TILEMAP_ROW
+    sbc hl,de
+    ex de,hl
+    pop hl
+    ld (hl),e
+    inc hl
+    ld (hl),d
+    dec hl
+  ret
 
 .ends
