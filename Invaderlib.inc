@@ -115,7 +115,8 @@
     ; B = Rect height.
     ; HL = Base address of buffer.
     ; DE = Address of top left tile of tilemap rectangle.
-    ; Preserves all registers used
+    ; Preserves all registers used.
+    ; Time: 11 lines.
     push af
     push bc
     push de

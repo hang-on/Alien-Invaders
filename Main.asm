@@ -1,4 +1,5 @@
 .include "Base.inc"
+.include "Spritelib.inc"
 .include "Invaderlib.inc"
 ;
 .equ ALIEN_ARMY_FIRST_ROW 5
@@ -132,7 +133,7 @@
   ; ---------------------------------------------------------------------------
   main:
     call AwaitFrameInterrupt
-    ;
+    ; NTSC vblank is lines 194-262 = 68 lines in total. 
     ld a,(vertical_scroll_value)
     ld b,VERTICAL_SCROLL_REGISTER
     call SetRegister
@@ -142,11 +143,13 @@
     ld b,BASE_HEIGHT+1                ; +1 for the self-erasing trick.
     ld hl,base_buffer
     ld de,(left_base_address)
-    call copy_buffer_to_tilemap_rect
+    call copy_buffer_to_tilemap_rect  ; 11 lines.
     ld de,(center_base_address)
-    call copy_buffer_to_tilemap_rect
+    call copy_buffer_to_tilemap_rect  ; 11 lines.
     ld de,(right_base_address)
-    call copy_buffer_to_tilemap_rect
+    call copy_buffer_to_tilemap_rect  ; 11 lines.
+    ;
+    call LoadSAT                      ; 14 lines.
     ;
     ; Non-vblank stuff below this line...
     ;
