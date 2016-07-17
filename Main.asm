@@ -111,17 +111,14 @@
     ld (right_base_address),hl
     ;
     LOAD_IMAGE MockupAssets,MockupAssetsEnd
-    ; Load player base tiles from vram tilemap to buffer.
+    ; Load player base tiles from vram tilemap to buffer - then blank it.
     ld a,BASE_WIDTH
     ld b,BASE_HEIGHT+1
     ld hl,CENTER_BASE_FIRST_TILE
     ld de,base_buffer
     call copy_tilemap_rect_to_buffer
-    ; Blank the center base.
-    ld hl,CENTER_BASE_FIRST_TILE
-    ld a,BASE_WIDTH
-    ld b,BASE_HEIGHT+1
     call blank_tilemap_rect
+    ;
     ; Turn on screen, etc.
     ld hl,register_data
     call load_vdp_registers
@@ -133,7 +130,7 @@
   ; ---------------------------------------------------------------------------
   main:
     call AwaitFrameInterrupt
-    ; NTSC vblank is lines 194-262 = 68 lines in total. 
+    ; NTSC vblank is lines 194-262 = 68 lines in total.
     ld a,(vertical_scroll_value)
     ld b,VERTICAL_SCROLL_REGISTER
     call SetRegister

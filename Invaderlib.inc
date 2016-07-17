@@ -29,6 +29,22 @@
   call LoadVRam
 .endm
 ; -----------------------------------------------------------------------------
+.macro SAVE_REGISTERS
+; -----------------------------------------------------------------------------
+  push af
+  push bc
+  push de
+  push hl
+.endm
+; -----------------------------------------------------------------------------
+.macro RESTORE_REGISTERS
+; -----------------------------------------------------------------------------
+  pop hl
+  pop de
+  pop bc
+  pop af
+.endm
+; -----------------------------------------------------------------------------
 .section "Invaderlib functions" free
 ; -----------------------------------------------------------------------------
   load_vdp_registers:
@@ -54,6 +70,8 @@
     ; B = Rect height.
     ; HL = Top left tile (address) of rectangle to copy.
     ; DE = Destination buffer.
+    ; All registers are preserved.
+    SAVE_REGISTERS
     add a,a                 ; Double width - the table elements are words.
     ld c,a                  ; Save width in C for counting.
     ; For each 'rect-height' do the following...
@@ -79,6 +97,7 @@
         jp nz,-
       pop bc                ; Restore rect-width*2.
     djnz --                 ; The rect-height for-loop.
+    RESTORE_REGISTERS
   ret
   ; ---------------------------------------------------------------------------
   blank_tilemap_rect:
@@ -117,10 +136,7 @@
     ; DE = Address of top left tile of tilemap rectangle.
     ; Preserves all registers used.
     ; Time: 11 lines.
-    push af
-    push bc
-    push de
-    push hl
+    SAVE_REGISTERS
     add a,a                 ; Double width - the table elements are words.
     ld c,a                  ; Save width in C for counting.
     ; For each 'rect-height' do the following...
@@ -147,10 +163,7 @@
         jp nz,-
       pop bc                ; Restore rect-width*2.
     djnz --                 ; The rect-height for-loop.
-    pop hl
-    pop de
-    pop bc
-    pop af
+    RESTORE_REGISTERS
   ret
   ; ---------------------------------------------------------------------------
   subtract_one_row:
